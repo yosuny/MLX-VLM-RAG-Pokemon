@@ -1,0 +1,8 @@
+mlx
+mlx-vlm
+transformers
+huggingface_hub
+torch
+pillow
+chromadb
+sentence-transformers

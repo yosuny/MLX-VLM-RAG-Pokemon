@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+
+# MLX & Data
+data_pokemon/
+chroma_db/
+adapters.safetensors
+adapter_config.json
+*.safetensors
+*.bin
+
+# MacOS
+.DS_Store
+
+# Logs
+ERROR_LOG.md
+EVALUATION_REPORT_v*.md
+
+# Internal Docs
+task.md
+implementation_plan.md
+walkthrough.md

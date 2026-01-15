@@ -1,0 +1,9 @@
+{"image": "data/images/red_circle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a red circle."}]}
+{"image": "data/images/red_rectangle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a red rectangle."}]}
+{"image": "data/images/red_triangle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a red triangle."}]}
+{"image": "data/images/blue_circle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a blue circle."}]}
+{"image": "data/images/blue_rectangle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a blue rectangle."}]}
+{"image": "data/images/blue_triangle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a blue triangle."}]}
+{"image": "data/images/green_circle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a green circle."}]}
+{"image": "data/images/green_rectangle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a green rectangle."}]}
+{"image": "data/images/green_triangle.png", "messages": [{"role": "user", "content": "What shape and color is this?"}, {"role": "assistant", "content": "This is a green triangle."}]}
