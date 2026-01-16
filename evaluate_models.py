@@ -10,9 +10,9 @@ from rag_engine import RAGEngine
 MODELS_DIR = "mlx-community/Qwen2-VL-7B-Instruct-4bit"
 ADAPTER_PATH = "adapters"
 TEST_IMAGES = [
-    "data_pokemon/images/pokemon_000.jpg",
-    "data_pokemon/images/pokemon_024.jpg", # Likely Pikachu or Arbok depending on index, will see in report
-    "data_pokemon/images/pokemon_043.jpg"
+    "assets/images/pokemon_000.jpg",
+    "assets/images/pokemon_024.jpg", # Likely Pikachu or Arbok depending on index, will see in report
+    "assets/images/pokemon_043.jpg"
 ]
 REPORT_FILE = "EVALUATION_REPORT_v4.md"
 
