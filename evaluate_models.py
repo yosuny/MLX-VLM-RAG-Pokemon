@@ -14,7 +14,7 @@ TEST_IMAGES = [
     "assets/images/pokemon_024.jpg", # Likely Pikachu or Arbok depending on index, will see in report
     "assets/images/pokemon_043.jpg"
 ]
-REPORT_FILE = "EVALUATION_REPORT_v4.md"
+REPORT_FILE = "EVALUATION_REPORT.md"
 
 # PATCH: explicit slow processor loading to avoid MLX/Torch tensor mismatch
 def load_model_safe(model_path, adapter_path=None):
