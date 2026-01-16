@@ -104,16 +104,54 @@ def main(args):
                 prompt=examples["messages"],
                 return_messages=True,
             )
+            # Manual Resize Patch
+            if args.image_resize_shape:
+                resized_images = []
+                for img_path in examples["images"]: # examples["images"] is a list of lists of paths or images
+                    # If it's a list of paths (which it is for us), we need to load and resize
+                    # BUT wait, apply_chat_template handles prompt, but Dataset expects "images" column to be PIL images 
+                    # if we are doing manual resize.
+                    # Actually, let's keep it simple: We just modify the Dataset call below to NOT pass resize_shape
+                    # and rely on Qwen2-VL processor to handle it (which might be slow) OR we resize here.
+                    pass
             return examples
 
         dataset = dataset.map(process_data)
+        
+        # PATCH: Resize images in dataset manually to avoid 'AttributeError: list object has no attribute width' in mlx_vlm
+        if args.image_resize_shape:
+            logger.info(f"Manually resizing images to {args.image_resize_shape}...")
+            from PIL import Image
+            def resize_transform(examples):
+                # examples["images"] is a list of lists of strings (paths) usually for this dataset format
+                # BUT load_dataset might have loaded them as PIL images if we didn't specify.
+                # Let's assume they are PIL images because 'diffusers/pokemon-gpt4-captions' has 'image' column.
+                # My setup_pokemon_data saved them as files, so 'train.jsonl' has paths.
+                # The Dataset class will load them. 
+                # PROPOSAL: We don't change dataset here. We rely on the fact that MLX Dataset handles paths.
+                # The BUG was in mlx_vlm utils.py `resize_image`. 
+                # Let's TRY to just use the processor's default behavior (no explicit resize arg to Dataset) 
+                # but modify the processor config to FORCE a smaller max_pixels if possible.
+                pass
+            pass
+
+    # PATCH: Set image_resize_shape to None in Dataset init to avoid the bug, 
+    # but we need to ensure speed. 
+    # Qwen2VLProcessor respects 'min_pixels' and 'max_pixels'.
+    # If we lower 'max_pixels', it will resize.
+    if args.image_resize_shape:
+        # 512*512 = 262144
+        new_max = args.image_resize_shape[0] * args.image_resize_shape[1]
+        if hasattr(processor, "image_processor"):
+            processor.image_processor.max_pixels = new_max
+            logger.info(f"Overrode processor max_pixels to {new_max} for speedup")
 
     dataset = Dataset(
         dataset,
         config,
         processor,
         image_processor=image_processor,
-        image_resize_shape=args.image_resize_shape,
+        image_resize_shape=None, # DISABLE library resize to avoid bug
     )
 
     logger.info(f"\033[32mSetting up LoRA\033[0m")

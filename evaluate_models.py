@@ -8,13 +8,13 @@ from rag_engine import RAGEngine
 # Configuration
 # Use Repo ID instead of absolute path so HF hub resolves the snapshot correctly
 MODELS_DIR = "mlx-community/Qwen2-VL-7B-Instruct-4bit"
-ADAPTER_PATH = "."
+ADAPTER_PATH = "adapters"
 TEST_IMAGES = [
     "data_pokemon/images/pokemon_000.jpg",
     "data_pokemon/images/pokemon_024.jpg", # Likely Pikachu or Arbok depending on index, will see in report
     "data_pokemon/images/pokemon_043.jpg"
 ]
-REPORT_FILE = "EVALUATION_REPORT.md"
+REPORT_FILE = "EVALUATION_REPORT_v4.md"
 
 # PATCH: explicit slow processor loading to avoid MLX/Torch tensor mismatch
 def load_model_safe(model_path, adapter_path=None):
