@@ -21,6 +21,14 @@ We used **Supervised Fine-Tuning (SFT)** with **LoRA**.
 - **Architecture**: **Multimodal Embedding**. The vision encoder converts images into visual tokens, which are concatenated with text embeddings and fed into the LLM.
 - **Process**: The model learns the **alignment** between these visual tokens and the corresponding text labels (e.g., "This image vector = Pikachu").
 
+### 2.1 RAG Robustness: Semantic Search
+We verified the RAG system's ability to find "semantically similar" but visually distinct images.
+- **Experiment**: Querying with a generated "Plush Toy Bulbasaur" image (not in dataset).
+- **Result**:
+    - Top 1: **Bulbasaur (Official Art)** (Similarity 0.70) ✅
+    - Top 2: Caterpie (Dissimilar) (Similarity 0.97)
+- **Significance**: SigLIP embeddings capture **semantic meaning** (e.g., "green", "bulb on back") rather than just pixel matching, making retrieval robust across different art styles.
+
 ### 2. Failure Analysis (Root Cause)
 During our experiments, the tuned model generated repetitive outputs (`!!!!`):
 - **Template Mismatch**: Initial run missed `apply_chat_template`, causing the model to lose track of text/vision boundaries.
