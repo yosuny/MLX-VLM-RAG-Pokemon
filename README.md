@@ -13,35 +13,62 @@ The goal of this project is to create an AI that can identify and describe Pokem
 1.  **Fine-tuning (LoRA)**: Teaching the model specific knowledge (English/Korean names) via Qwen2-VL.
 2.  **RAG (Retrieval)**: Retrieving visual matches from a vector database (ChromaDB + SigLIP) to assist the model.
 
-## 🔬 Experimental Results & Technical Review
-Based on our fine-tuning experiments, here are the key technical takeaways:
+## 🛠️ Methodology
 
-### 1. Training Methodology: SFT
-We used **Supervised Fine-Tuning (SFT)** with **LoRA**.
-- **Architecture**: **Multimodal Embedding**. The vision encoder converts images into visual tokens, which are concatenated with text embeddings and fed into the LLM.
-- **Process**: The model learns the **alignment** between these visual tokens and the corresponding text labels (e.g., "This image vector = Pikachu").
+### 1. Data Processing
+We utilized the [pokemon-gpt4-captions](https://huggingface.co/datasets/diffusers/pokemon-gpt4-captions) dataset.
+- **Source**: 883 image-text pairs of Pokemon.
+### 1. Data Processing
+We utilized the [pokemon-gpt4-captions](https://huggingface.co/datasets/diffusers/pokemon-gpt4-captions) dataset.
+- **Source**: 883 image-text pairs of Pokemon.
+- **Enrichment (`setup_pokemon_data.py`)**:
+    - **Identification**: Matched English captions against a Pokemon Database to identify the specific Pokemon.
+    - **Metadata Injection**: Added **Korean Names** and **Generation Info** (e.g., "This is Bulbasaur (이상해씨). It is a GEN I Pokemon.").
+- **Strategic Splitting**:
+    - **Train Set (600+)**: Contains **Gen 1 & Gen 2** Pokemon.
+    - **Valid Set (200+)**: Contains **Gen 3+** Pokemon.
+    - *Purpose*: To test if the model can describe unseen generations using the learned visual-text alignment.
 
-### 2.1 RAG Robustness: Semantic Search
-We verified the RAG system's ability to find "semantically similar" but visually distinct images.
-- **Experiment**: Querying with a generated "Plush Toy Bulbasaur" image (not in dataset).
-- **Result**:
-    - Top 1: **Bulbasaur (Official Art)** (Similarity 0.70) ✅
-    - Top 2: Caterpie (Dissimilar) (Similarity 0.97)
-- **Significance**: SigLIP embeddings capture **semantic meaning** (e.g., "green", "bulb on back") rather than just pixel matching, making retrieval robust across different art styles.
+### 2. RAG System Implementation
+Since 4-bit quantized VLMs often hallucinate exact names, we built a **Retrieval-Augmented Generation (RAG)** pipeline.
+- **Vision Encoder**: Used **SigLIP (So400m)** to generate high-quality image embeddings.
+- **Vector Database**: **ChromaDB** stores these embeddings along with metadata (Pokemon Names).
+- **Process**:
+    1. **Query**: When a new image comes in, SigLIP encodes it.
+    2. **Retrieval**: ChromaDB finds the "visually most similar" image in the database.
+    3. **Context Injection**: The metadata (Name/Description) of the retrieved image is injected into the LLM's prompt as a "Hint".
+    4. **Generation**: The VLM uses the visual input + text hint to generate the final answer.
 
-### 2. Failure Analysis (Root Cause)
-During our experiments, the tuned model generated repetitive outputs (`!!!!`):
-- **Template Mismatch**: Initial run missed `apply_chat_template`, causing the model to lose track of text/vision boundaries.
-- **Underfitting (Early Stopping)**: Even with the fix, stopping at 20-30 steps was premature. The loss was still decreasing, and the model hadn't learned to output the **EOS token** (`<|im_end|>`) effectively.
-- **Conclusion**: SFT for VLMs requires significant training steps (600+) to converge properly. **RAG proved to be the superior solution** for this specific task of accurate entity naming.
+## 🔬 Experimental Results & Technical Review (Phase 2)
+We conducted a second round of evaluation focusing on **Korean name generation** and **Tuning Stability**.
 
-### 3. Future Work / Next Steps
-To resolve the identified issues and improve model performance, we propose the following steps:
+### 1. Comparative Analysis: Vanilla vs RAG vs Tuned
+| Approach | Stability | English Accuracy | Korean Accuracy | Verdict |
+| :--- | :--- | :--- | :--- | :--- |
+| **Vanilla (Base)** | ⭐⭐⭐⭐⭐ | High | **Low** (Phonetic Transliteration) | Good for description, bad for specific entity naming. |
+| **RAG (Context)** | ⭐⭐⭐⭐⭐ | **High** | **High** (If context is retrieved) | **Best Choice**. Corrects hallucinations (e.g., Bulbasaur -> Kabutops context). |
+| **Tuned (LoRA)** | ⭐⭐ | Low | N/A (Failed) | **Not Recommended for 4-bit**. Suffered from pattern collapse. |
 
-1.  **Increase Training Steps**: Extending training to **600-1,000 steps** to allow the model to fully learn the EOS token distribution and converge.
-2.  **Adjust LoRA Desimeters**: Increasing the LoRA Rank (r) from 8 to 16/32 to grant the adapter more capacity to learn new concepts.
-3.  **Data Quality Refinement**: Ensuring all training examples consistently include explicit termination patterns to reinforce sentence ending.
-4.  **Hybrid RAG-Tuning**: Instead of memorizing knowledge, tune the model to be a better "reader" of the RAG context.
+### 2. Tuning Failure Analysis (Post-Mortem)
+Despite fixing the initial **IndexError (Vocab Mismatch)** by lowering the learning rate (`1e-4` -> `1e-5`), the fine-tuned model exhibited **quality degradation** (repetitive text).
+
+#### 📉 Training Log Analysis (`training_log_v2.csv`)
+- **Loss trajectory**: Started at **18.9** and plateaued at **~7.86**.
+- **Insight**: A converged SFT loss typically drops below **2.0**. A final loss of ~8.0 indicates the model **failed to learn meaningful patterns**, effectively memorizing noise or getting stuck in a local minimum due to the 4-bit quantization constraints.
+
+#### 🔍 Root Causes
+- **Root Cause 1 (Quantization Noise)**: Tuning **all linear layers** on a **4-bit** quantized model caused it to learn noise instead of features.
+- **Root Cause 2 (Data Scarcity)**: 500 images were insufficient for "All-Linear" tuning scope, leading to overfitting.
+- **Detailed Report**: See [`TUNING_ROOT_CAUSE_ANALYSIS.md`](TUNING_ROOT_CAUSE_ANALYSIS.md).
+
+### 3. Key Findings
+*   **Prompt Engineering**: Adding `"in English and Korean"` to the prompt significantly improved the Base model's attempt to output Korean (even if phonetically inferred).
+*   **Vision Encoder**: Qwen2-VL uses a **ViT-based Vision Encoder** separated from the LLM. Standard practice is to **freeze** this encoder and tune the LLM, which we followed.
+*   **RAG Superiority**: For entity-heavy tasks like Pokemon naming (especially in multi-lingual contexts), RAG proved far more effective and cheaper than fine-tuning.
+
+### 4. Artifacts
+- **[EVALUATION_REPORT_v2.md](EVALUATION_REPORT_v2.md)**: Visual comparison of Vanilla vs RAG.
+- **[TUNING_REPORT.md](TUNING_REPORT.md)**: Detailed log of the tuning attempt.
 
 ## 🚀 Features
 *   **Data Pipeline**: Downloads Pokemon image-text pairs and augments them with Korean names.
