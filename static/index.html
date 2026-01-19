@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon VLM Comparator</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --border-color: #30363d;
+            --code-bg: #21262d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--accent-color);
+            margin-bottom: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .upload-area {
+            background-color: var(--card-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-color);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-img {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .result-content {
+            flex-grow: 1;
+            font-size: 1.05rem;
+            /* Increased size */
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            color: #8b949e;
+            display: none;
+        }
+
+        .rag-meta {
+            font-size: 0.95rem;
+            /* Increased size */
+            color: #8b949e;
+            background-color: var(--code-bg);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .rag-image {
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 0.8rem 0;
+            border: 1px solid #444;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:disabled {
+            background-color: #30363d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🔍 VLM RAG Comparator</h1>
+
+    <div class="container">
+        <!-- Upload Section -->
+        <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <p>Click or Drag Image Here</p>
+            <input type="file" id="fileInput" accept="image/*">
+            <img id="preview" class="preview-img">
+        </div>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <p>OR</p>
+            <input type="text" id="urlInput" placeholder="Paste Image URL here..."
+                style="padding: 10px; width: 60%; border-radius: 5px; border: 1px solid #30363d; background: #161b22; color: #c9d1d9;">
+        </div>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button id="analyzeBtn" onclick="analyzeImage()">Run Analysis</button>
+        </div>
+
+        <div id="loading" class="loading">
+            <p>⏳ Thinking... (Inference may take 10-20s)</p>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-grid">
+            <!-- Vanilla -->
+            <div class="card">
+                <h2>1. Vanilla Model (Base)</h2>
+                <div id="vanillaResult" class="result-content">Upload an image to start.</div>
+            </div>
+
+            <!-- RAG -->
+            <div class="card">
+                <h2>2. RAG Retrieval</h2>
+                <div id="ragResult" class="result-content">Waiting...</div>
+            </div>
+
+            <!-- Tuned -->
+            <div class="card">
+                <h2>3. Tuned Model (LoRA)</h2>
+                <div id="tunedResult" class="result-content">Waiting...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        let selectedFile = null;
+
+        const urlInput = document.getElementById('urlInput');
+
+        fileInput.addEventListener('change', function (e) {
+            if (e.target.files && e.target.files[0]) {
+                selectedFile = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'inline-block';
+                    analyzeBtn.disabled = false;
+                }
+                reader.readAsDataURL(selectedFile);
+                urlInput.value = ''; // Clear URL input if file selected
+            }
+        });
+
+        urlInput.addEventListener('input', function (e) {
+            if (this.value) {
+                selectedFile = null;
+                fileInput.value = ''; // Clear file input
+                preview.src = this.value;
+                preview.style.display = 'inline-block';
+                analyzeBtn.disabled = false;
+            }
+        });
+
+        async function analyzeImage() {
+            const urlValue = urlInput.value.trim();
+            if (!selectedFile && !urlValue) {
+                alert("Please select a file or enter a URL.");
+                return;
+            }
+
+            // UI Updates
+            document.getElementById('loading').style.display = 'block';
+            analyzeBtn.disabled = true;
+            document.getElementById('vanillaResult').innerText = "Processing...";
+            document.getElementById('ragResult').innerText = "Searching Vector DB...";
+            document.getElementById('tunedResult').innerText = "Generating...";
+
+            const formData = new FormData();
+            if (selectedFile) {
+                formData.append('file', selectedFile);
+            } else if (urlValue) {
+                formData.append('url', urlValue);
+            }
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // Update UI with Data
+                document.getElementById('vanillaResult').innerText = data.vanilla;
+                document.getElementById('tunedResult').innerText = data.tuned;
+
+                if (data.rag.error) {
+                    document.getElementById('ragResult').innerText = "Error: " + data.rag.error;
+                } else {
+                    document.getElementById('ragResult').innerHTML = `
+                        ${data.rag.image_url ? `<img src="${data.rag.image_url}" class="rag-image" alt="Retrieved Image">` : ''}
+                        <strong>Top Match ID:</strong> ${data.rag.id}<br>
+                        <strong>Distance:</strong> ${data.rag.distance.toFixed(4)}<br>
+                        <div class="rag-meta">${data.rag.caption}</div>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Analysis failed. See console.");
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                analyzeBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

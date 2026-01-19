@@ -6,23 +6,24 @@ __pycache__/
 .env
 
 # MLX & Data
-data_pokemon/
+data*/
 chroma_db/
-adapters.safetensors
-adapter_config.json
 *.safetensors
 *.bin
+
+# Uploads (temporary)
+uploads/
 
 # MacOS
 .DS_Store
 
-# Logs
-ERROR_LOG.md
+# Logs (raw data)
 *.log
-adapters_v3_full/
-adapters_v3_final/
+*.csv
 
-# Internal Docs
-task.md
-implementation_plan.md
-walkthrough.md
+# Adapters (model weights - too large)
+adapters/
+adapters_v*/
+
+# Archive (old plans, not for GitHub)
+archive/

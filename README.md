@@ -107,6 +107,9 @@ We extensively tried to resolve the inference issue:
 *   **Dataset**: The dataset used (`diffusers/pokemon-gpt4-captions`) requires adherence to its non-commercial license terms. **Do not distribute the image files commercially.**
 
 ## 🛠️ Usage
+
+> ℹ️ See [`FILE_STRUCTURE_GUIDE.md`](FILE_STRUCTURE_GUIDE.md) for detailed file descriptions.
+
 ### 1. Setup
 ```bash
 python3 -m venv .venv
@@ -117,25 +120,25 @@ pip install -r requirements.txt
 ### 2. Prepare Data
 ```bash
 # Downloads data and creates Korean name mappings
-python setup_pokemon_data.py
+python scripts/setup/setup_pokemon_data.py
 ```
 > **Note**: This script downloads data locally. The images are NOT included in this repository to respect copyright.
 
 ### 3. Run RAG Demo
 ```bash
-python demo_rag.py
+python src/demo_rag.py
 ```
 
-### 4. Fine-Tune (LoRA)
+### 4. Fine-Tune (LoRA V3)
 ```bash
-python patched_lora.py --dataset data_pokemon --steps 600 --output-path adapters --apply-chat-template
+python scripts/train/lora_v3.py --dataset data_pokemon --steps 600 --output-path adapters --apply-chat-template
 ```
 
 ### 5. Evaluate
 ```bash
-python evaluate_models.py
+python scripts/eval/evaluate_models_v2.py
 ```
-Check `EVALUATION_REPORT.md` for visual results.
+Check `docs/reports/PHASE_2_VS_RAG_EVALUATION.md` for visual results.
 
 ## 📁 Repository Structure
 *   `setup_pokemon_data.py`: Data downloader & preprocessor (adding Korean labels).
