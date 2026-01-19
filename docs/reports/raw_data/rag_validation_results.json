@@ -1,0 +1,26 @@
+{
+  "v3": [
+    {
+      "image": "data/pokemon/images/pokemon_440.jpg",
+      "name": "Riolu (Gen 4)",
+      "output": "This is a picture of a Pokémon called \"Glaceon.\""
+    },
+    {
+      "image": "data/pokemon/images/pokemon_411.jpg",
+      "name": "Gastrodon (Gen 4)",
+      "output": "This is a picture of a Pokémon called \"Mawile.\" It is a Poison-type Pokémon that appears in the Pokémon series."
+    }
+  ],
+  "v4": [
+    {
+      "image": "data/pokemon/images/pokemon_440.jpg",
+      "name": "Riolu (Gen 4)",
+      "output": "This Pokémon is Umbreon."
+    },
+    {
+      "image": "data/pokemon/images/pokemon_411.jpg",
+      "name": "Gastrodon (Gen 4)",
+      "output": "This is the Pokémon named \"Mawile\" in English and \"마월\" in Korean."
+    }
+  ]
+}

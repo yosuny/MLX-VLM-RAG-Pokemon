@@ -1,9 +1,15 @@
 from datasets import load_dataset
 import os
+import sys
 import json
 from PIL import Image
+
+# Add project root to path
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, PROJECT_ROOT)
+
 try:
-    from pokemon_info import POKEMON_DB
+    from src.pokemon_info import POKEMON_DB
 except ImportError:
     print("Warning: pokemon_info.py not found. Run build_metadata.py first.")
     POKEMON_DB = {}
@@ -41,14 +47,12 @@ def setup_pokemon_data(num_samples=None, output_dir="data/pokemon"):
         # Sort names by length descending to match "Mega Charizard" before "Charizard"
         sorted_names = sorted(name_lookup.keys(), key=len, reverse=True)
         
+        import re
         for name in sorted_names:
-            if name in caption.lower():
-                found_id = name_lookup[name] # This is the ID or Name key, let's get the dict
-                # POKEMON_DB has int keys and string keys. name_lookup maps to the string key.
-                # Actually POKEMON_DB keys are mixed. Let's rely on name_lookup values being the full entry? 
-                # Wait, POKEMON_DB structure: {1: {...}, "bulbasaur": {...}}
-                # name_lookup value should be the dict object or ID.
-                # Let's just lookup directly in POKEMON_DB
+            # Use regex to match whole words only to avoid matching "Natu" in "signature"
+            pattern = rf"\b{re.escape(name)}\b"
+            if re.search(pattern, caption.lower()):
+                found_id = name_lookup[name]
                 found_meta = POKEMON_DB[name]
                 break
         

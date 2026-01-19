@@ -24,37 +24,35 @@ def run_demo():
         return
         
     # Load captions from JSONL to use as metadata
-    jsonl_path = "data/pokemon/train.jsonl"
+    jsonl_paths = ["data/pokemon/train.jsonl", "data/pokemon/validation.jsonl"]
     caption_map = {}
-    if os.path.exists(jsonl_path):
-        import json
-        with open(jsonl_path, "r") as f:
-            for line in f:
-                try:
-                    entry = json.loads(line)
-                    # Support both formats we might have generated
-                    # 1. {"images": ["path"], "messages": [...]}
-                    # 2. {"image": "path", "text": "..."}
-                    
-                    img_path = ""
-                    caption = ""
-                    
-                    if "images" in entry:
-                        img_path = entry["images"][0]
-                        # Extract assistant answer
-                        for msg in entry["messages"]:
-                            if msg["role"] == "assistant":
-                                caption = msg["content"]
-                                break
-                    elif "image" in entry:
-                        img_path = entry["image"]
-                        caption = entry.get("text", "")
+    
+    for jsonl_path in jsonl_paths:
+        if os.path.exists(jsonl_path):
+            import json
+            with open(jsonl_path, "r") as f:
+                for line in f:
+                    try:
+                        entry = json.loads(line)
+                        img_path = ""
+                        caption = ""
                         
-                    if img_path:
-                        filename = os.path.basename(img_path)
-                        caption_map[filename] = caption
-                except:
-                    continue
+                        if "images" in entry:
+                            img_path = entry["images"][0]
+                            # Extract assistant answer
+                            for msg in entry["messages"]:
+                                if msg["role"] == "assistant":
+                                    caption = msg["content"]
+                                    break
+                        elif "image" in entry:
+                            img_path = entry["image"]
+                            caption = entry.get("text", "")
+                            
+                        if img_path:
+                            filename = os.path.basename(img_path)
+                            caption_map[filename] = caption
+                    except:
+                        continue
     
     # Prepare metadata list corresponding to 'images' list
     metadatas = []

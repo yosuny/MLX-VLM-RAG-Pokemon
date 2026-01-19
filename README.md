@@ -41,12 +41,15 @@ An AI system that identifies and describes 800+ Pokemon with Korean names using:
 
 ## 📊 Final Evaluation Results
 
-| Image | Ground Truth | Vanilla | RAG | Fused |
-| :--- | :--- | :---: | :---: | :---: |
-| **Umbreon** | Umbreon (블래키) | ✅ | ✅ | ✅ |
-| **Staryu** | Staryu (별가사리) | ❌ | ✅ | ❌ |
-| **Riolu** | Riolu (리오르) | ❌ | ✅ | ❌ |
-| **Gastrodon** | Gastrodon (트리토돈) | ❌ | ✅ | ❌ |
+| Image | Ground Truth | Vanilla Model | RAG System | Tuned Model |
+| :---: | :---: | :--- | :--- | :--- |
+| <img src="data/pokemon/images/pokemon_117.jpg" width="100"><br>**Umbreon**<br>(Gen 2) | Umbreon<br>(블래키) | ✅ **Correct**<br>"This is Umbreon." | ✅ **Correct**<br>"This is Umbreon (블래키)." | ✅ **Correct**<br>"This is Umbreon." |
+| <img src="data/pokemon/images/pokemon_025.jpg" width="100"><br>**Staryu**<br>(Gen 1) | Staryu<br>(별가사리) | ⚠️ **Hallucination**<br>"Staraptor" | ✅ **Correct**<br>"This is Staryu (별가사리)."<br>*(Fixed via metadata update)* | ❌ **Literal**<br>"Star-shaped object" |
+| <img src="data/pokemon/images/pokemon_440.jpg" width="100"><br>**Riolu**<br>(Gen 4) | Riolu<br>(리오르) | ❌ **Hallucination**<br>"Umbreon" | ⚠️ **Gen 1-2 Similar Match**<br>"Umbreon/Glaceon"<br>*(Restricted to Gen 1-2 DB)* | ❌ **Hallucination**<br>"Glaceon" |
+| <img src="data/pokemon/images/pokemon_411.jpg" width="100"><br>**Gastrodon**<br>(Gen 4) | Gastrodon<br>(트리토돈) | ❌ **Hallucination**<br>"Gallade" | ⚠️ **Gen 1-2 Similar Match**<br>"Mawile/Slug-like"<br>*(Restricted to Gen 1-2 DB)* | ❌ **Hallucination**<br>"Gallade" |
+
+> **Note on RAG Fairness**: For a fair comparison with the Tuned Model (trained only on Gen 1-2), **RAG retrieval was restricted to Gen 1-2 Pokemon**.
+> Therefore, for Gen 3+ queries like Riolu, the RAG system is *expected* to retrieve the most visually similar Gen 1-2 Pokemon rather than the exact match. This confirms the system correctly follows constraints.
 
 ### Conclusion
 | Approach | Best For |
@@ -86,7 +89,13 @@ An AI system that identifies and describes 800+ Pokemon with Korean names using:
 - **Insight**: Domain-specific keywords can bias the model toward linguistically similar (but visually incorrect) answers.
 - **Lesson**: Test both generic and hinted prompts; sometimes **less context is better**.
 
-### 6. Code-Level Debugging Insights
+### 6. Substring Match Bug in RAG Metadata
+- **Problem**: Piplup was incorrectly identified as **Natu (네이티)** in the RAG UI.
+- **Root Cause**: The automated labeling script used `if name in caption.lower()`. The word **"signature"** (frequent in captions) contains **"natu"**, triggering a false positive for Natu.
+- **Solution**: Updated the script to use **Regex with Word Boundaries** (`\b{name}\b`) to ensure only full Pokemon names are matched.
+- **Lesson**: When performing keyword-based automated labeling, always use **word boundaries** to prevent substring-induced mislabeling.
+
+### 7. Code-Level Debugging Insights
 
 | Issue | Symptom | Root Cause | Fix |
 | :--- | :--- | :--- | :--- |

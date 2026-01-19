@@ -41,12 +41,15 @@ Apple MLX 프레임워크를 활용한 포켓몬 식별 **VLM 미세조정 + RAG
 
 ## 📊 최종 평가 결과
 
-| 이미지 | 정답 | Vanilla | RAG | Fused |
-| :--- | :--- | :---: | :---: | :---: |
-| **블래키** | Umbreon (블래키) | ✅ | ✅ | ✅ |
-| **별가사리** | Staryu (별가사리) | ❌ | ✅ | ❌ |
-| **리오르** | Riolu (리오르) | ❌ | ✅ | ❌ |
-| **트리토돈** | Gastrodon (트리토돈) | ❌ | ✅ | ❌ |
+| 이미지 | 정답 | Vanilla 모델 | RAG 시스템 | Tuned 모델 |
+| :---: | :---: | :--- | :--- | :--- |
+| <img src="data/pokemon/images/pokemon_117.jpg" width="100"><br>**블래키**<br>(2세대) | Umbreon<br>(블래키) | ✅ **정답**<br>"This is Umbreon." | ✅ **정답**<br>"This is Umbreon (블래키)." | ✅ **정답**<br>"This is Umbreon." |
+| <img src="data/pokemon/images/pokemon_025.jpg" width="100"><br>**별가사리**<br>(1세대) | Staryu<br>(별가사리) | ⚠️ **환각 (Hallucination)**<br>"Staraptor (찌르호크)" | ✅ **정답**<br>"This is Staryu..."<br>*(메타데이터 갱신 완료)* | ❌ **단순 묘사**<br>"Star-shaped object" |
+| <img src="data/pokemon/images/pokemon_440.jpg" width="100"><br>**리오르**<br>(4세대) | Riolu<br>(리오르) | ❌ **환각**<br>"Umbreon" | ⚠️ **1-2세대 유사 매칭**<br>"Umbreon/Glaceon"<br>*(1-2세대 DB 제한)* | ❌ **환각**<br>"Glaceon" |
+| <img src="data/pokemon/images/pokemon_411.jpg" width="100"><br>**트리토돈**<br>(4세대) | Gastrodon<br>(트리토돈) | ❌ **환각**<br>"Gallade" | ⚠️ **1-2세대 유사 매칭**<br>"Mawile/Slug-like"<br>*(1-2세대 DB 제한)* | ❌ **환각**<br>"Gallade" |
+
+> **RAG 공정성 참고**: 튜닝된 모델(1-2세대만 학습)과의 공정한 비교를 위해, **RAG 검색 범위를 1-2세대 포켓몬으로 제한**했습니다.
+> 따라서 Riolu와 같은 3세대 이후 포켓몬 검색 시, 정확한 정답 대신 시각적으로 가장 유사한 1-2세대 포켓몬을 찾아내는 것이 시스템의 정상적인 동작입니다.
 
 ### 결론
 | 방식 | 최적 용도 |
@@ -86,7 +89,13 @@ Apple MLX 프레임워크를 활용한 포켓몬 식별 **VLM 미세조정 + RAG
 - **인사이트**: 도메인 키워드가 모델을 언어적으로 유사하지만 시각적으로 틀린 답변으로 편향시킴
 - **교훈**: 일반/힌트 프롬프트 모두 테스트; 때로는 **적은 컨텍스트가 더 나음**
 
-### 6. 코드 레벨 디버깅 인사이트
+### 6. RAG 메타데이터 내 부분 문자열 매칭 버그 (Substring Match)
+- **문제**: 펭도리(Piplup) 이미지가 RAG UI에서 **네이티(Natu)**로 식별됨
+- **원인**: 자동 라벨링 스크립트가 `if name in caption.lower()`를 사용함. 펭도리 설명에 포함된 **"signature"**라는 단어 안에 **"natu"**가 포함되어 있어 네이티로 오판독됨
+- **해결**: **정규표현식 단어 경계**(`\b{name}\b`)를 사용하여 정확히 대응하는 이름만 매칭되도록 수정
+- **교훈**: 키워드 기반 자동 라벨링 시, **단어 단위 매칭**을 수행하지 않으면 부분 문자열에 의한 대규모 오답 데이터가 생성될 수 있음
+
+### 7. 코드 레벨 디버깅 인사이트
 
 | 이슈 | 증상 | 원인 | 해결 |
 | :--- | :--- | :--- | :--- |

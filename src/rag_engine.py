@@ -61,24 +61,55 @@ class RAGEngine:
             else:
                 metadatas.append({"path": path})
             
-        self.collection.add(
+        self.collection.upsert(
             embeddings=embeddings,
             ids=ids,
             metadatas=metadatas
         )
         print(f"Indexed {len(image_paths)} images.")
 
-    def search(self, query, top_k=2):
+    def search(self, query, top_k=2, allowed_ids=None):
         # Query can be text or image path
         if os.path.exists(query):
             query_emb = self.get_image_embedding(query)
         else:
             query_emb = self.get_text_embedding(query)
+        
+        # If filtering is needed, fetch more results and filter
+        fetch_k = top_k * 10 if allowed_ids else top_k
             
         results = self.collection.query(
             query_embeddings=[query_emb],
-            n_results=top_k
+            n_results=fetch_k
         )
+        
+        # Filter by allowed_ids if provided
+        if allowed_ids and results and results.get('ids'):
+            filtered_ids = []
+            filtered_distances = []
+            filtered_metadatas = []
+            filtered_documents = []
+            
+            for i, doc_id in enumerate(results['ids'][0]):
+                if doc_id in allowed_ids:
+                    filtered_ids.append(doc_id)
+                    filtered_distances.append(results['distances'][0][i])
+                    if results.get('metadatas'):
+                        filtered_metadatas.append(results['metadatas'][0][i])
+                    if results.get('documents'):
+                        filtered_documents.append(results['documents'][0][i])
+                    
+                    # Stop when we have enough results
+                    if len(filtered_ids) >= top_k:
+                        break
+            
+            # Reconstruct results in the same format
+            results = {
+                'ids': [filtered_ids],
+                'distances': [filtered_distances],
+                'metadatas': [filtered_metadatas] if filtered_metadatas else None,
+                'documents': [filtered_documents] if filtered_documents else None
+            }
         
         return results
 

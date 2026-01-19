@@ -37,6 +37,7 @@ app.add_middleware(
 
 # Global State
 rag_engine = None
+allowed_rag_ids = None  # Gen 1-2 only for fair comparison
 # We do NOT keep VLM models globally anymore to save RAM
 
 MODEL_PATH = "mlx-community/Qwen2-VL-7B-Instruct-4bit"
@@ -44,13 +45,30 @@ FUSED_MODEL_PATH = "models/fused_qwen2_vl_4bit_quantized"
 
 @app.on_event("startup")
 async def startup_event():
-    global rag_engine
+    global rag_engine, allowed_rag_ids
     print("🚀 Starting Server (Sequential Mode)...")
     
     # Load RAG Engine (Small enough to keep resident)
     print("Loading RAG Engine...")
     rag_engine = RAGEngine(db_path="./chroma_db")
     print("RAG Engine Loaded.")
+    
+    # Load allowed IDs (Gen 1-2 only from train.jsonl)
+    print("Loading Gen 1-2 IDs for RAG filtering...")
+    allowed_rag_ids = set()
+    train_path = "data/pokemon/train.jsonl"
+    if os.path.exists(train_path):
+        with open(train_path, "r") as f:
+            for line in f:
+                try:
+                    entry = json.loads(line)
+                    if "images" in entry:
+                        img_path = entry["images"][0]
+                        filename = os.path.basename(img_path)
+                        allowed_rag_ids.add(filename)
+                except:
+                    continue
+    print(f"Loaded {len(allowed_rag_ids)} Gen 1-2 Pokemon IDs for RAG.")
 
 def cleanup_memory():
     """Force garbage collection and clear MLX cache."""
@@ -196,7 +214,7 @@ async def analyze(file: UploadFile = File(None), url: str = Form(None)):
     # 1. RAG Search (Fastest)
     print("[RAG] Searching...")
     try:
-        results = rag_engine.search(file_path, top_k=1)
+        results = rag_engine.search(file_path, top_k=1, allowed_ids=allowed_rag_ids)
         if results['ids']:
             best_id = results['ids'][0][0]
             best_dist = results['distances'][0][0]
