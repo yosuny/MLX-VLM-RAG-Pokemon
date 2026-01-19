@@ -6,54 +6,48 @@ This document maps key files to their purpose and corresponding experimental pha
 
 ```
 mlx-vlm-rag-pokemon/
-├── README.md / README_KR.md    # Project documentation
+├── README.md / README_KR.md    # Project documentation (with Lessons Learned)
 ├── FILE_STRUCTURE_GUIDE.md     # This file
 ├── requirements.txt
 │
 ├── src/                        # Core application code
 │   ├── rag_engine.py           # SigLIP-based image retrieval
-│   ├── server.py               # FastAPI backend (Web UI)
+│   ├── server.py               # FastAPI backend (Web UI, uses Fused Model)
 │   ├── demo_rag.py             # CLI RAG demo
-│   └── pokemon_info.py         # Pokemon metadata (308k+ entries)
+│   └── pokemon_info.py         # Pokemon metadata
 │
 ├── scripts/                    # Training & Evaluation
 │   ├── train/
 │   │   ├── lora_v3.py          # [Phase 3] V3 Tuning Script (Success!)
-│   │   ├── patched_lora.py     # [Phase 2] Legacy (Blind Model Issue)
-│   │   └── train_vlm.py        # [Phase 1] Original script
+│   │   ├── fuse_vlm.py         # [Phase 4] Dequantize + Fuse LoRA script
+│   │   └── quantize_vlm.py     # [Phase 4] Re-quantize fused model to 4-bit
 │   ├── eval/
-│   │   ├── evaluate_models.py
-│   │   ├── evaluate_models_v2.py
-│   │   └── evaluate_tuned_only.py
+│   │   ├── evaluate_models_v3.py  # Final Eval (Generic Prompt)
+│   │   └── evaluate_models_v4.py  # Final Eval (Hinted Prompt)
 │   └── setup/
-│       ├── setup_pokemon_data.py  # Downloads and prepares data
-│       └── setup_eval_v2.py
+│       └── setup_pokemon_data.py  # Downloads and prepares data
 │
-├── tools/                      # Debug & Utility Scripts (Reference)
-│   ├── debug_chat_template*.py # Token expansion debugging
-│   ├── debug_v3_tokens.py      # V3 token verification
-│   ├── inference_v3_custom.py  # Custom inference (M-RoPE issue)
-│   └── ...
+├── tools/                      # Debug & Utility Scripts
+│   ├── test_fused_manual.py    # Manual verification of fused model
+│   ├── patch_quant_config.py   # Injects quantization config into JSON
+│   └── debug_rag_retrieval.py  # Debugging RAG metadata extraction
 │
 ├── docs/                       # Reports & Logs
 │   ├── reports/
-│   │   ├── PHASE_2_TUNING_FAILURE_ANALYSIS.md
-│   │   └── PHASE_2_VS_RAG_EVALUATION.md
+│   │   ├── EVALUATION_REPORT_v3.md   # Final Results (Generic)
+│   │   ├── EVALUATION_REPORT_v4.md   # Final Results (Hinted)
+│   │   └── PHASE_2_TUNING_FAILURE_ANALYSIS.md
 │   └── logs/
-│       ├── phase_2_training_log.csv
-│       └── phase_3_training_log.txt
+│       └── eval/               # Evaluation logs (if preserved)
+│
+├── models/                     # Model weights (gitignored/partially tracked)
+│   └── fused_qwen2_vl_4bit_quantized/ # Final standalone version
 │
 ├── data/                       # Datasets (gitignored)
-│   ├── pokemon/                # Main Pokemon dataset (images, train.jsonl, validation.jsonl)
-│   ├── eval_v2/                # Evaluation dataset
-│   └── pilot/                  # Pilot training data
+│   └── pokemon/                # Images & JSONL
 │
-├── static/                     # Web UI assets
-│   └── index.html
-│
-└── archive/                    # Obsolete files (gitignored)
-    ├── LORA_ADAPTER_FIX_PLAN.md
-    └── RETRAINING_PLAN.md
+└── static/                     # Web UI assets
+    └── index.html
 ```
 
 ## 🔑 Key File Mapping
@@ -61,11 +55,10 @@ mlx-vlm-rag-pokemon/
 | File | Phase | Description |
 | :--- | :--- | :--- |
 | `scripts/train/lora_v3.py` | **Phase 3** | Manual token expansion tuning. Loss → 0.0006. |
-| `scripts/train/patched_lora.py` | Phase 2 | Had truncation bug causing "Blind Model". |
-| `src/rag_engine.py` | Phase 5 | SigLIP + ChromaDB retrieval. |
-| `src/server.py` | Phase 4 | FastAPI Web UI backend. |
-| `docs/reports/PHASE_2_TUNING_FAILURE_ANALYSIS.md` | Phase 2 | Consolidated failure analysis. |
-| `docs/reports/PHASE_2_VS_RAG_EVALUATION.md` | Phase 2 | Vanilla vs RAG comparison. |
+| `scripts/train/fuse_vlm.py` | **Phase 4** | Fusing LoRA adapters into base model weights. |
+| `scripts/train/quantize_vlm.py` | **Phase 4** | Re-quantizing 16-bit fused model back to 4-bit. |
+| `docs/reports/EVALUATION_REPORT_v4.md` | **Final** | Performance comparison after RAG fix. |
+| `src/server.py` | Final | Production Web UI using the Fused Model. |
 
 ## 🚀 Usage
 
@@ -73,22 +66,16 @@ mlx-vlm-rag-pokemon/
 # Setup
 python scripts/setup/setup_pokemon_data.py
 
-# Run RAG Demo
-python src/demo_rag.py
+# Start Web UI (Production mode with Fused Model)
+uvicorn src.server:app --reload --port 8000
 
-# Start Web UI
-uvicorn src.server:app --reload
-
-# Train (V3)
-python scripts/train/lora_v3.py --dataset data_pokemon --steps 600
-
-# Evaluate
-python scripts/eval/evaluate_models_v2.py
+# Evaluation (Final Comparison)
+python scripts/eval/evaluate_models_v4.py
 ```
 
 ## 🚫 Excluded from Git
 
-- `archive/` - Old plans
-- `data*/` - Datasets
-- `adapters*/` - Model weights
-- `*.safetensors`, `*.log`, `*.csv`
+- `data/` - Datasets
+- `adapters/` - Intermediate LoRA weights
+- `models/` - Large safetensors files (unless using Git LFS)
+- `*.safetensors`, `*.log`

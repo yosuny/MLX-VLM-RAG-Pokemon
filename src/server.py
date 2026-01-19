@@ -40,7 +40,7 @@ rag_engine = None
 # We do NOT keep VLM models globally anymore to save RAM
 
 MODEL_PATH = "mlx-community/Qwen2-VL-7B-Instruct-4bit"
-ADAPTER_PATH = "adapters"
+FUSED_MODEL_PATH = "models/fused_qwen2_vl_4bit_quantized"
 
 @app.on_event("startup")
 async def startup_event():
@@ -220,12 +220,12 @@ async def analyze(file: UploadFile = File(None), url: str = Form(None)):
         task_name="Vanilla"
     )
 
-    # 3. Tuned Inference
+    # 3. Tuned Inference (Fused Model - No Adapter Needed)
     response_data["tuned"] = run_inference_task(
         file_path, 
-        MODEL_PATH, 
-        adapter_path=ADAPTER_PATH, 
-        task_name="Tuned"
+        FUSED_MODEL_PATH, 
+        adapter_path=None, 
+        task_name="Tuned (Fused)"
     )
     
     return response_data

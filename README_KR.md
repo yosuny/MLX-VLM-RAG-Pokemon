@@ -2,132 +2,133 @@
 
 [English README](README.md)
 
-Apple MLX 프레임워크를 사용하여 macOS에서 포켓몬 식별을 위한 **VLM (Vision-Language Model)** 미세조정 및 **RAG (검색 증강 생성)**를 수행한 프로젝트입니다.
+Apple MLX 프레임워크를 활용한 포켓몬 식별 **VLM 미세조정 + RAG** 프로젝트입니다.
 
 ![MLX](https://img.shields.io/badge/MLX-Compatible-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![Data](https://img.shields.io/badge/Data-Non--Commercial-red)
 
----
+## 📌 프로젝트 개요
+800종 이상의 포켓몬을 한국어 이름과 함께 식별하는 AI 시스템:
+1. **RAG (검색)**: ChromaDB + SigLIP을 통한 시각적 유사도 검색
+2. **Fine-tuning (LoRA)**: Qwen2-VL에 커스텀 어댑터를 퓨전한 4-bit 모델
 
-## 📌 실험 결과 및 기술적 회고 (Technical Review)
+## 🛠️ 방법론
 
-이미지 인식 튜닝 과정과 결과, 기술적 분석 내용 
+### 1. 데이터 처리
+- **소스**: [pokemon-gpt4-captions](https://huggingface.co/datasets/diffusers/pokemon-gpt4-captions) (883장)
+- **보강**: 한국어 이름 + 세대 정보 추가 (예: "이상해씨 (Bulbasaur). GEN I.")
+- **분할**: Train (Gen 1-2, 600+) / Valid (Gen 3+, 200+)
 
-### 1. 학습 방식: SFT (Supervised Fine-Tuning)
-우리는 **Qwen2-VL** 모델을 사용하여 **LoRA (Low-Rank Adaptation)** 방식으로 SFT를 진행했습니다.
+### 2. RAG 시스템
+| 구성요소 | 기술 |
+| :--- | :--- |
+| **비전 인코더** | SigLIP (So400m) |
+| **벡터 DB** | ChromaDB |
+| **프로세스** | 쿼리 이미지 → 임베딩 → 유사 이미지 검색 → 힌트 주입 → VLM 생성 |
 
-*   **구조 (Architecture)**:
-    *   **이미지 벡터화 (Multimodal Embedding)**: Vision Encoder가 이미지를 시각적 토큰(Visual Tokens)으로 변환합니다. 변환된 벡터는 텍스트 임베딩과 결합되어 LLM에 입력됩니다. (Cross-Modal Instruction Tuning)
-    *   **접근법**: 이미지 벡터를 학습하는 것이 아니라, **이미지 벡터와 텍스트(정답) 사이의 연결 고리(Alignment)**를 LLM 파트에서 학습했습니다.
+### 3. LoRA 튜닝 & 모델 퓨전
 
-### 2. 실험 과정 (Experiments)
+#### 왜 4-bit 베이스에 16-bit 어댑터를 사용하는가?
+- LoRA는 **정밀한 그래디언트**가 필요함; 4-bit 가중치는 그래디언트 손실 유발
+- 해결: **16-bit로 학습** 후 퓨전
 
-| 차수 (Phase) | 설정 (Configuration) | 결과 (Result) | 분석 (Analysis) |
+#### 퓨전 전략
+```
+[4-bit 베이스] → 역양자화 → [16-bit] + [16-bit LoRA] → 퓨전 → 재양자화 → [4-bit 퓨전 모델]
+```
+- **최종 모델**: `models/fused_qwen2_vl_4bit_quantized` (**4.3GB**)
+
+## 📊 최종 평가 결과
+
+| 이미지 | 정답 | Vanilla | RAG | Fused |
+| :--- | :--- | :---: | :---: | :---: |
+| **블래키** | Umbreon (블래키) | ✅ | ✅ | ✅ |
+| **별가사리** | Staryu (별가사리) | ❌ | ✅ | ❌ |
+| **리오르** | Riolu (리오르) | ❌ | ✅ | ❌ |
+| **트리토돈** | Gastrodon (트리토돈) | ❌ | ✅ | ❌ |
+
+### 결론
+| 방식 | 최적 용도 |
+| :--- | :--- |
+| **RAG** | ✅ **프로덕션** (800+ 엔티티, 최고 정확도) |
+| **Fused** | 응답 스타일/한국어 출력 제어 |
+| **Vanilla** | 빠른 프로토타이핑 |
+
+> **권장**: **RAG** (정확도) + **Fused Model** (스타일)을 조합하면 최적의 결과를 얻을 수 있습니다.
+
+## 📚 레슨런 (Lessons Learned)
+
+### 1. MLX LoRA 어댑터 인퍼런스 이슈 (M-RoPE)
+- **문제**: LoRA 학습 성공 (Loss 0.0006) 후에도 인퍼런스 시 출력이 생성되지 않음
+- **원인**: `mlx_vlm`의 `generate()` 함수가 동적 토큰 확장 시 **M-RoPE (멀티모달 위치 인코딩)** 상태 관리를 제대로 처리하지 못함
+- **해결**: **모델 퓨전** - LoRA 가중치를 베이스 모델에 영구 병합하여 런타임 어댑터 로딩 제거
+- **교훈**: 라이브러리 한계에 직면하면 **가중치 퓨전**을 런타임 어댑터 주입의 대안으로 고려
+
+### 2. EOS 토큰 학습 실패 (과소적합/Underfitting)
+- **문제**: Phase 1-2 튜닝 시 반복적인 쓰레기 출력 (`!!!!`) 발생
+- **원인**: 학습이 너무 일찍 중단됨 (20-30 steps), Loss가 여전히 높은 상태 (~8.0). 모델이 문장 종료 토큰 (`<|im_end|>`)을 학습하지 못함
+- **해결**: Loss가 1.0 이하로 수렴할 때까지 **600+ steps** 학습
+- **교훈**: VLM 미세조정에서 **충분한 학습 스텝**이 필수. EOS 학습 전 조기 중단은 무한 생성 루프 유발
+
+### 3. 4-bit 양자화 & 그래디언트 정밀도
+- **문제**: 4-bit로 LoRA 학습 시 불안정하고 수렴 실패 (Loss ~8.0에서 고착)
+- **인사이트**: 4-bit 양자화된 가중치는 역전파 시 그래디언트 정밀도 손실
+- **교훈**: 어댑터는 항상 **16-bit (Float16)**로 학습 후 퓨전하여 배포
+
+### 4. RAG vs Fine-tuning 트레이드오프
+- **발견**: 800+ 엔티티 식별에서 RAG가 정확도와 비용 모두에서 미세조정보다 우수
+- **이유**: 미세조정은 엔티티당 대량 데이터 필요; RAG는 엔티티당 1장 이미지만 인덱싱
+- **교훈**: **대규모 엔티티 인식**에는 RAG 우선. 미세조정은 **스타일/형식 제어**에만 사용
+
+### 5. 프롬프트 엔지니어링의 영향
+- **관찰**: "Pokemon" 힌트를 프롬프트에 추가하면 오히려 환각 유발 (Staryu → Staraptor)
+- **인사이트**: 도메인 키워드가 모델을 언어적으로 유사하지만 시각적으로 틀린 답변으로 편향시킴
+- **교훈**: 일반/힌트 프롬프트 모두 테스트; 때로는 **적은 컨텍스트가 더 나음**
+
+### 6. 코드 레벨 디버깅 인사이트
+
+| 이슈 | 증상 | 원인 | 해결 |
 | :--- | :--- | :--- | :--- |
-| **1차 (1st)** | 30 Steps, `apply_chat_template` 미적용 | **실패** (`!!!!` 반복) | 텍스트와 이미지를 구분하는 특수 토큰 누락으로 모델이 환각 증세를 보임. |
-| **2차 (2nd)** | 20 Steps, `apply_chat_template` 적용 | **실패** (`!!!!` 반복) | 포맷팅은 수정했으나 학습량(Step)이 절대적으로 부족(Underfitting)하여 EOS 토큰을 학습하지 못함. |
-| **3차 (3rd)** | **600 Steps**, **V3 Fix** (토큰 자동 확장) | **성공** (Loss 0.0006) | **'Blind Model' 문제 해결**. 이미지 토큰을 수동 확장하여 시각 정보와 텍스트를 완벽하게 연결함. |
+| **RAG 힌트 누락** | RAG가 Vanilla와 동일 결과 | `documents` 대신 `metadatas['caption']` 읽어야 함 | 올바른 필드 접근 |
+| **PyTorch 텐서 오류** | `ValueError` | HF Fast Processor가 MLX 비호환 | `use_fast=False` + numpy 래퍼 |
+| **이미지 경로 불일치** | `FileNotFoundError` | `data_pokemon/` vs `data/pokemon/` | 문자열 치환 |
+| **양자화 인자 순서** | 잘못된 양자화 | `nn.quantize(model, group_size, bits)` 순서 | MLX API 문서 확인 |
+| **Config 누락** | Float16으로 로드됨 | `quantization` 블록 미포함 | config.json 패치 |
 
-### 2-1. 비교 분석 (Comparative Analysis: Eval v2 기준)
-| 방식 (Approach) | 안정성 | 영문 정확도 | 국문 정확도 | 결론 (Verdict) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Vanilla (Base)** | ⭐⭐⭐⭐ | 높음 (묘사 우수) | **낮음 (음차 오류)** | 고유 명사를 모름. **힌트 제거 시 정확도 하락** (RAG 의존성 확인). |
-| **RAG (Context)** | ⭐⭐⭐⭐⭐ | **높음** | **검색 품질에 의존** | 검색이 정확하면 정답. 검색 실패 시 오답 유도 (예: 이상해씨 유사 이미지 -> 치코리타로 환각). |
-| **Tuned (LoRA)** | ⭐ | 낮음 | **실패 (Phase 2)** | 2차 테스트 당시에는 반복 출력(`!!!!`) 문제로 실패함. (인퍼런스 불가). |
+## 🚀 빠른 시작
 
-### 2-1. RAG의 유용성: 유사 이미지 검색 (Semantic Search)
-우리는 RAG 시스템이 "똑같지 않은" 유사 이미지도 잘 찾는지 검증했습니다.
-*   **실험**: 학습 데이터에 없는 "이상해씨 인형(Plush Toy)" 사진으로 검색
-*   **결과**:
-    *   1순위: **이상해씨 (공식 일러스트)** (유사도 0.70) ✅
-    *   2순위: 캐터피 (다른 포켓몬) (유사도 0.97 - 멀어짐)
-*   **의의**: SigLIP 임베딩은 픽셀 일치 여부가 아니라, **"초록색", "등에 씨앗이 있음" 같은 시각적 의미(Semantics)**를 인식하므로 스타일이 달라도 정확히 검색합니다.
-
-### 3. 1~2차 실패 원인 심층 분석 (Root Cause Analysis of Phase 1-2)
-
-**Q. 학습 방법에 문제(벡터 결합 등)가 있었는가?**
-> **아니요, 아키텍처는 올바랐습니다.**
-> 우리는 현대적인 VLM의 표준 방식(이미지 패치 벡터화 + 텍스트 인스트럭션 결합)을 따랐습니다. 문제는 **데이터 포맷팅(Template)**과 **학습량(Volume)**에 있었습니다.
-
-**Q. EOS Token (문장 종료) 학습 실패 원인은?**
-> **조기 종료(Early Stopping)에 의한 학습 미달(Underfitting)입니다.**
-> *   Loss(손실 함수)가 `24.0` -> `11.0`으로 계속 떨어지는 도중에 학습을 중단했습니다.
-> *   모델이 정답("피카츄")을 생성하기도 전에 학습이 끊겨버려, 문장을 끝맺는 법(`<|im_end|>`)을 배울 기회를 갖지 못했습니다. 최소 600 Step 이상의 충분한 학습이 필요합니다.
-
-> *   모델이 정답("피카츄")을 생성하기도 전에 학습이 끊겨버려, 문장을 끝맺는 법(`<|im_end|>`)을 배울 기회를 갖지 못했습니다. 최소 600 Step 이상의 충분한 학습이 필요합니다.
-
-### 4. 3차 튜닝 성공 및 인퍼런스 한계 (Final Status)
-초기 실패 원인(Blind Model)을 분석한 후, 이미지 토큰을 수동으로 확장하는 새로운 스크립트 `lora_v3.py`를 개발하여 문제를 해결했습니다.
-- **튜닝 결과 (성공)**:
-    - **데이터셋**: 520장 (전체 학습 데이터).
-    - **결과**: Loss가 **0.0006**까지 떨어지며, 모델이 이미지와 한국어 이름을 완벽하게 학습했습니다.
-- **인퍼런스 한계 (MLX 플랫폼 이슈)**:
-    - 학습된 가중치(`adapters_v3_full`)는 유효하지만, 현재 `mlx_vlm` 라이브러리는 우리가 적용한 '동적 토큰 확장' 방식을 네이티브로 지원하지 않습니다.
-    - **증상**: 텍스트 생성 시 **M-RoPE (멀티모달 위치 인코딩)** 상태 관리가 꼬이면서, 모델이 빈 텍스트를 출력하는 현상이 발생합니다.
-    - **증상**: 텍스트 생성 시 **M-RoPE (멀티모달 위치 인코딩)** 상태 관리가 꼬이면서, 모델이 빈 텍스트를 출력하는 현상이 발생합니다.
-    - **결론**: 모델 학습 방법론은 입증되었으나, 이를 실제 서비스(Inference)하려면 MLX 라이브러리의 업데이트나 고도화된 커스텀 엔진 개발이 필요합니다.
-
-### 4-1. 인퍼런스 오류 해결을 위한 시도 (Attempts to Fix)
-우리는 이 문제를 해결하기 위해 다양한 시도를 진행했습니다:
-1.  **커스텀 인퍼런스 스크립트 작성 (`inference_v3_custom.py`)**: `mlx_vlm.generate()`를 우회하여 직접 토큰을 생성하는 루프를 구현했으나, KV Cache 상태 관리 복잡도로 인해 실패했습니다.
-2.  **Base Model 대조군 테스트**: 튜닝된 어댑터 없이 바닐라 모델로 커스텀 스크립트를 실행해도 동일한 오류(빈 출력)가 발생함을 확인했습니다. -> **"학습된 가중치 문제가 아니라 스크립트(엔진) 문제임"을 증명.**
-3.  **결론**: 현재 단계에서는 `mlx_vlm`의 업데이트를 기다리거나, vLLM 등 다른 서빙 엔진 전용으로 모델을 변환해야 합니다.
-
-### 5. 결론 (Conclusion)
-*   **RAG (검색) 승리**: 특정 데이터(한국어/영어 이름 매칭)를 찾는 데에는 학습보다 검색(RAG)이 월등히 빠르고 정확했습니다.
-*   **생성 모델의 한계**: 적은 데이터와 짧은 학습으로는 기존 모델이 가진 강력한 표현력을 재조정하기 어렵습니다.
-
-### 5. 향후 개선 및 해결 방안 (Future Work)
-
-실패 원인을 바탕으로 성능을 개선하기 위한 다음 단계 제안입니다:
-
-1.  **학습량 증대 (Increase Training Steps)**:
-    *   현재 20~30 Step은 턱없이 부족합니다. 최소 **600~1,000 Step** 이상 학습하여 Loss가 충분히 수렴(Converge)하도록 기다려야 합니다.
-2.  **데이터 품질 강화 (Data Quality)**:
-    *   EOS 토큰(`<|im_end|>`) 학습 강화를 위해 답변 문장의 길이를 다양화하고, 명시적인 종료 패턴을 학습 데이터에 추가합니다.
-3.  **LoRA Rank 조정**:
-    *   현재의 미세조정 강도가 부족할 수 있으므로, LoRA의 Rank(r) 값을 16 또는 32로 높여 더 많은 파라미터를 학습에 참여시킵니다.
-4.  **하이브리드 접근 (Hybrid RAG-Tuning)**:
-    *   미세조정 모델이 RAG에서 검색된 정보를 문장으로 자연스럽게 다듬는 역할만 수행하도록 역할을 분담시킵니다.
-
----
-
-## 🚀 주요 기능
-*   **Data Pipeline**: 포켓몬 데이터 다운로드 및 한국어 이름 매핑 추가.
-*   **VLM RAG**: SigLIP 임베딩을 활용한 이미지-이미지 검색.
-*   **LoRA Fine-tuning**: MLX용 Qwen2-VL 학습 패치 스크립트.
-*   **Evaluation**: 바닐라 모델 vs RAG vs 튜닝 모델 성능 자동 비교.
-
-## 🛠️ 사용 방법
-
-### 1. 설치
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+# 1. 설치
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+
+# 2. 데이터 준비
+python scripts/setup/setup_pokemon_data.py
+
+# 3. 웹 UI 실행
+uvicorn src.server:app --reload --port 8000
+# http://localhost:8000/static/index.html 접속
 ```
 
-### 2. 데이터 준비
-```bash
-# 데이터 다운로드 및 한국어 매핑 생성
-python setup_pokemon_data.py
-```
+## 📁 주요 파일
+| 파일 | 설명 |
+| :--- | :--- |
+| `src/rag_engine.py` | SigLIP + ChromaDB 검색 엔진 |
+| `src/server.py` | FastAPI 인퍼런스 서버 |
+| `scripts/train/lora_v3.py` | LoRA 학습 스크립트 |
+| `scripts/train/fuse_vlm.py` | 모델 퓨전 스크립트 |
+| `models/fused_qwen2_vl_4bit_quantized/` | 최종 퓨전 모델 (4.3GB) |
 
-### 3. RAG 데모 실행
-```bash
-python demo_rag.py
-```
-
-### 4. 미세조정 (Fine-Tune) 실행
-```bash
-# 주의: 충분한 학습을 위해 steps를 높게 설정하는 것을 권장합니다 (600+)
-python patched_lora.py --dataset data_pokemon --steps 600 --output-path adapters --apply-chat-template
-```
-
-### 5. 평가 (Evaluation)
-```bash
-python evaluate_models.py
-```
+## 📄 리포트
+- [EVALUATION_REPORT_v3.md](docs/reports/EVALUATION_REPORT_v3.md) - 일반 프롬프트 평가
+- [EVALUATION_REPORT_v4.md](docs/reports/EVALUATION_REPORT_v4.md) - 힌트 프롬프트 평가
 
 ## ⚠️ 라이선스 및 고지사항
-이 프로젝트는 교육 목적으로 제작되었으며 닌텐도나 포켓몬 컴퍼니와 무관합니다. 데이터셋의 라이선스 규정을 준수해 주십시오.
+- **비공식 프로젝트**: 닌텐도, 게임프리크, 포켓몬 컴퍼니와 제휴되지 않음
+- **데이터셋**: [diffusers/pokemon-gpt4-captions](https://huggingface.co/datasets/diffusers/pokemon-gpt4-captions) 라이선스에 따라 비상업적 용도로만 사용
+
+## 🤝 감사의 글
+- [Apple MLX](https://github.com/ml-explore/mlx)
+- [Hugging Face Diffusers](https://huggingface.co/diffusers/pokemon-gpt4-captions)
+- [Qwen-VL](https://github.com/QwenLM/Qwen-VL)
