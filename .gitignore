@@ -18,7 +18,9 @@ adapter_config.json
 
 # Logs
 ERROR_LOG.md
-EVALUATION_REPORT_v*.md
+*.log
+adapters_v3_full/
+adapters_v3_final/
 
 # Internal Docs
 task.md

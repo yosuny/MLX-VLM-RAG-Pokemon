@@ -21,7 +21,29 @@ Despite resolving the critical `IndexError` crash by lowering the learning rate,
 - **Optimization**: The default `Adam` optimizer settings in standard MLX examples might not be tuned for **4-bit QLoRA** stability (e.g., epsilon values, weight decay).
 - **Inference Pipeline**: The need to "force" slow image processors and monkey-patch tensor handling indicates the platform pipeline for this specific model is not yet mature enough for seamless "out-of-the-box" fine-tuning.
 
-## Recommendations for Future Attempts
-1. **Reduce Scope**: Only target attention layers (`q_proj`, `v_proj`) instead of all linear layers. This reduces parameters and noise.
-2. **Increase Precision**: Use an **8-bit** or **BF16** base model if hardware permits (requires ~16GB+ VRAM/RAM). 4-bit is too unstable for rigorous fine-tuning on small datasets.
-3. **Data Quality**: 500 images might be too few for "All Linear" tuning. Increase dataset size or use data augmentation locally.
+### 4. Definitive Root Cause: Model Blindness (Token Expansion Failure)
+**Verification**:
+- `debug_chat_template_v2.py` confirmed that `apply_chat_template` inserts **only 1 `<|image_pad|>` token**.
+- **V3 Pilot Run**: Implemented manually token expansion in `lora_v3.py`.
+- **Result**: Loss dropped from **3.83** to **0.09** in just 50 steps. (Previous failure stayed at 8.0).
+- **Conclusion**: The model is no longer blind and is learning effectively.
+- **Problem**: Qwen2-VL requires dynamic token expansion (e.g., 256 tokens for a 224x224 image).
+- **Consequence**: The model received 1 placeholder token for an image that generated ~600 visual features.
+- **The Fatal Patch**: To prevent the resulting dimension mismatch crash (`Features > Embeds`), our `patched_lora.py` implemented a truncation logic:
+    ```python
+    # Logic in patched_lora.py
+    if pad_size < 0: # Features (600) > Placeholders (1)
+        image_features = image_features[:, :inputs_embeds.shape[1], :] # Truncate to 1
+    ```
+- **Result**: **We fed the model only 1 pixel worth of data (0.2% of the image).** The model was effectively blind, leading to the high loss (7.86) and repetitive text.
+
+### 5. Ruled Out Factors (Verified)
+- **Data Format / Image Token Placement**:
+    - `apply_chat_template` correctly identifies the string content and adds the *start/end* tokens. The issue is strictly the *quantity* of the inner pad tokens.
+
+## 6. Recommendations for Future
+1.  **Correct Tokenization**: The training script must manually calculate the image grid size and insert `N` image tokens (`<|image_pad|>`) into the prompt string *before* tokenization, matching the Vision Encoder's output.
+2.  **Remove Truncation Patch**: Once tokens are expanded correctly, the truncation patch should be removed.
+3. **Reduce Scope**: Only target attention layers (`q_proj`, `v_proj`) instead of all linear layers. This reduces parameters and noise.
+4. **Use Higher Precision**: Move to **8-bit** or **BF16** base model to reduce quantization noise. This requires ~16GB+ VRAM/RAM). 4-bit is too unstable for rigorous fine-tuning on small datasets.
+5. **Data Quality**: 500 images might be too few for "All Linear" tuning. Increase dataset size or use data augmentation locally.

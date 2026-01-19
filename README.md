@@ -61,7 +61,17 @@ Despite fixing the initial **IndexError (Vocab Mismatch)** by lowering the learn
 - **Root Cause 2 (Data Scarcity)**: 500 images were insufficient for "All-Linear" tuning scope, leading to overfitting.
 - **Detailed Report**: See [`TUNING_ROOT_CAUSE_ANALYSIS.md`](TUNING_ROOT_CAUSE_ANALYSIS.md).
 
-### 3. Key Findings
+### 3. V3 Tuning Success & Inference Challenges (Final Status)
+After investigating the initial failure, we developed a new tuning script `lora_v3.py` that fixes the "Blind Model" issue by manually expanding image tokens.
+- **Tuning Success**:
+    - **Dataset**: 520 Images (Full Train Set).
+    - **Result**: Loss dropped to **0.0006**. The model successfully learned visual features and Korean names.
+- **Inference Limitation (MLX Platform)**:
+    - While the model weights (`adapters_v3_full`) are valid, the current `mlx_vlm` library lacks native support for the dynamic token expansion required by our fix.
+    - **Symptom**: The inference script fails to properly manage **M-RoPE (Multimodal Rotary Embedding)** states during autoregressive generation, leading to empty outputs.
+    - **Conclusion**: The tuning methodology is proven, but serving the model requires library-level updates or a complex custom inference engine.
+
+### 4. Key Findings
 *   **Prompt Engineering**: Adding `"in English and Korean"` to the prompt significantly improved the Base model's attempt to output Korean (even if phonetically inferred).
 *   **Vision Encoder**: Qwen2-VL uses a **ViT-based Vision Encoder** separated from the LLM. Standard practice is to **freeze** this encoder and tune the LLM, which we followed.
 *   **RAG Superiority**: For entity-heavy tasks like Pokemon naming (especially in multi-lingual contexts), RAG proved far more effective and cheaper than fine-tuning.

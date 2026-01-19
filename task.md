@@ -1,0 +1,22 @@
+# MLX-VLM-RAG-Pokemon
+
+- [x] Project Initialization <!-- id: 0 -->
+    - [x] Setup virtual environment and dependencies (`mlx-vlm`, `torch`, `transformers`, etc.) <!-- id: 1 -->
+- [x] Download/Verify Qwen-VL-7B 4-bit/8-bit quantized model <!-- id: 2 -->
+- [x] Image Tuning Implementation <!-- id: 3 -->
+    - [x] Prepare a small dataset for VLM fine-tuning (demo purpose) <!-- id: 4 -->
+    - [x] Implement LoRA fine-tuning script using `mlx-vlm` <!-- id: 5 -->
+    - [x] Run test training and verify loss decrease <!-- id: 6 -->
+- [x] Image RAG Implementation <!-- id: 7 -->
+    - [x] Setup Image Embedding Model (e.g., CLIP or SigLIP) <!-- id: 8 -->
+    - [x] Implement Image Retrieval System (Vector Store) <!-- id: 9 -->
+    - [x] Integrate Retrieval with Qwen-VL generation (RAG pipeline) <!-- id: 10 -->
+- [x] Verification & Demo <!-- id: 11 -->
+    - [x] Create a demo notebook/script combining RAG and Tuned Model <!-- id: 12 -->
+    - [x] Documentation (`walkthrough.md`) <!-- id: 13 -->
+    - [x] **Korean Data Support**: Added Korean name mappings (Bulbasaur -> 이상해씨) to dataset <!-- id: 18 -->
+    - [x] **Evaluation Phase** <!-- id: 14 -->
+        - [x] Step 1: Evaluate Vanilla Model Accuracy (Pokemon Name) <!-- id: 15 -->
+        - [x] Step 2: Evaluate Image RAG Model Accuracy <!-- id: 16 -->
+        - [x] Step 3: Evaluate Image Tuned (LoRA) Model Accuracy <!-- id: 17 -->
+        - [/] Step 3-1: Refine Tuned Model (Re-train with lower LR/steps) <!-- id: 19 -->
