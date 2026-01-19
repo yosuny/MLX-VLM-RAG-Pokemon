@@ -191,7 +191,9 @@ def main(args):
 
         progress_bar = tqdm(range(args.steps), position=0, leave=True)
         for i in progress_bar:
-            inputs = dataset[i * args.batch_size : (i + 1) * args.batch_size]
+            # Cyclic Data Loading
+            batch_indices = [(j % len(dataset)) for j in range(i * args.batch_size, (i + 1) * args.batch_size)]
+            inputs = [dataset[idx] for idx in batch_indices]
             
             # Debug: Check token count for first batch
             if i == 0 and epoch == 0:
