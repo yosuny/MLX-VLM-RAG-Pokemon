@@ -39,17 +39,26 @@ Since 4-bit quantized VLMs often hallucinate exact names, we built a **Retrieval
     3. **Context Injection**: The metadata (Name/Description) of the retrieved image is injected into the LLM's prompt as a "Hint".
     4. **Generation**: The VLM uses the visual input + text hint to generate the final answer.
 
-## 🔬 Experimental Results & Technical Review (Phase 2)
-We conducted a second round of evaluation focusing on **Korean name generation** and **Tuning Stability**.
+## 🔬 Experiments & Evaluation
 
-### 1. Comparative Analysis: Vanilla vs RAG vs Tuned
+### 1. Evolution of Experiments (Tuning Process)
+We iterated through three major phases to achieve successful fine-tuning.
+
+| Phase | Configuration | Result | Analysis |
+| :--- | :--- | :--- | :--- |
+| **1st** | 30 Steps, Raw Template | **Failed** (`!!!!`) | Model confused by raw prompt structure. Hallucinated tokens. |
+| **2nd** | 20 Steps, Chat Template | **Failed** (`!!!!`) | Underfitting. Model didn't learn EOS token due to early stopping. |
+| **3rd** | **600 Steps**, **V3 Fix** (Token Expansion) | **Success** (Loss 0.0006) | **Solved "Blind Model"**. Manually expanded image tokens to match vision encoder output, enabling perfect feature alignment. |
+
+### 2. Comparative Analysis: Vanilla vs RAG vs Tuned
+We evaluated the final models on accuracy and stability.
 | Approach | Stability | English Accuracy | Korean Accuracy | Verdict |
 | :--- | :--- | :--- | :--- | :--- |
-| **Vanilla (Base)** | ⭐⭐⭐⭐⭐ | High | **Low** (Phonetic Transliteration) | Good for description, bad for specific entity naming. |
+| **Vanilla (Base)** | ⭐⭐⭐⭐ | High | **Low** (Phonetic Transliteration) | Good for description, but **accuracy drops without hints** (Context). |
 | **RAG (Context)** | ⭐⭐⭐⭐⭐ | **High** | **High** (If context is retrieved) | **Best Choice**. Corrects hallucinations (e.g., Bulbasaur -> Kabutops context). |
-| **Tuned (LoRA)** | ⭐⭐ | Low | N/A (Failed) | **Not Recommended for 4-bit**. Suffered from pattern collapse. |
+| **Tuned (LoRA)** | ⭐ | Low | N/A (Failed) | **Phase 2 Failed**. Suffered from pattern collapse (`!!!!`). (Inference Impossible). |
 
-### 2. Tuning Failure Analysis (Post-Mortem)
+### 3. Phase 1 & 2 Failure Analysis (Post-Mortem)
 Despite fixing the initial **IndexError (Vocab Mismatch)** by lowering the learning rate (`1e-4` -> `1e-5`), the fine-tuned model exhibited **quality degradation** (repetitive text).
 
 #### 📉 Training Log Analysis (`training_log_v2.csv`)
@@ -58,10 +67,10 @@ Despite fixing the initial **IndexError (Vocab Mismatch)** by lowering the learn
 
 #### 🔍 Root Causes
 - **Root Cause 1 (Quantization Noise)**: Tuning **all linear layers** on a **4-bit** quantized model caused it to learn noise instead of features.
-- **Root Cause 2 (Data Scarcity)**: 500 images were insufficient for "All-Linear" tuning scope, leading to overfitting.
+- **Root Cause 2 (Data Scarcity)**: 500 images were insufficient for "All-Linear" tuning scope, leading to overfitting (during Phase 2 attempts).
 - **Detailed Report**: See [`TUNING_ROOT_CAUSE_ANALYSIS.md`](TUNING_ROOT_CAUSE_ANALYSIS.md).
 
-### 3. V3 Tuning Success & Inference Challenges (Final Status)
+### 4. Phase 3: Tuning Success & Inference Challenges (Final Status)
 After investigating the initial failure, we developed a new tuning script `lora_v3.py` that fixes the "Blind Model" issue by manually expanding image tokens.
 - **Tuning Success**:
     - **Dataset**: 520 Images (Full Train Set).
@@ -71,12 +80,18 @@ After investigating the initial failure, we developed a new tuning script `lora_
     - **Symptom**: The inference script fails to properly manage **M-RoPE (Multimodal Rotary Embedding)** states during autoregressive generation, leading to empty outputs.
     - **Conclusion**: The tuning methodology is proven, but serving the model requires library-level updates or a complex custom inference engine.
 
-### 4. Key Findings
+#### 4.1. Debugging & Attempts to Fix Inference
+We extensively tried to resolve the inference issue:
+1.  **Custom Inference Loop (`inference_v3_custom.py`)**: Built a script to bypass `mlx_vlm.generate()` and manually handle expanded tokens. Failed due to complexities in KV Cache/M-RoPE state updates.
+2.  **Base Model Control Test**: Ran the *Base Model* (untuned) through the custom script. It also failed to generate output. -> **Proved the issue is in the inference logic (Engine), not the tuned weights.**
+3.  **Status**: Waiting for upstream `mlx_vlm` support for dynamic token expansion.
+
+### 5. Key Findings
 *   **Prompt Engineering**: Adding `"in English and Korean"` to the prompt significantly improved the Base model's attempt to output Korean (even if phonetically inferred).
 *   **Vision Encoder**: Qwen2-VL uses a **ViT-based Vision Encoder** separated from the LLM. Standard practice is to **freeze** this encoder and tune the LLM, which we followed.
 *   **RAG Superiority**: For entity-heavy tasks like Pokemon naming (especially in multi-lingual contexts), RAG proved far more effective and cheaper than fine-tuning.
 
-### 4. Artifacts
+### 6. Artifacts
 - **[EVALUATION_REPORT_v2.md](EVALUATION_REPORT_v2.md)**: Visual comparison of Vanilla vs RAG.
 - **[TUNING_REPORT.md](TUNING_REPORT.md)**: Detailed log of the tuning attempt.
 
