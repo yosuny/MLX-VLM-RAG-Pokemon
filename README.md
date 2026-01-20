@@ -18,7 +18,7 @@ An AI system that identifies and describes 800+ Pokemon with Korean names using:
 ### 1. Data Processing
 - **Source**: [pokemon-gpt4-captions](https://huggingface.co/datasets/diffusers/pokemon-gpt4-captions) (883 image-text pairs)
 - **Enrichment**: Added **Korean Names** and **Generation Info** (e.g., "This is Bulbasaur (이상해씨). GEN I.")
-- **Split**: Train (Gen 1-2, 600+) / Valid (Gen 3+, 200+) to test generalization.
+- **Split**: Train (Gen 1-2, 520) / Valid (Gen 3+, 313) to test generalization.
 
 ### 2. RAG System
 | Component | Technology |
@@ -26,6 +26,7 @@ An AI system that identifies and describes 800+ Pokemon with Korean names using:
 | **Vision Encoder** | SigLIP (So400m) |
 | **Vector Database** | ChromaDB |
 | **Process** | Query Image → SigLIP Embedding → Retrieve Similar → Inject Hint → VLM Generate |
+| **Filtering** | Gen 1-2 only (for fair comparison with Tuned model) |
 
 ### 3. LoRA Tuning & Model Fusion
 
@@ -39,71 +40,77 @@ An AI system that identifies and describes 800+ Pokemon with Korean names using:
 ```
 - **Final Model**: `models/fused_qwen2_vl_4bit_quantized` (**4.3GB**)
 
-## 📊 Final Evaluation Results
+### 4. Multi-Stage Evaluation
+We conducted 4 evaluation phases to rigorously test all approaches:
 
-| Image | Ground Truth | Vanilla Model | RAG System | Tuned Model |
+| Version | Test Type | Purpose |
+| :--- | :--- | :--- |
+| v3 | Generic Prompt | Baseline comparison without hints |
+| v4 | Hinted Prompt | Test with "Pokemon" keyword hint |
+| v5 | OOD Trap Test | Test on **unseen Pokemon species** (Gen 3+) |
+| v6 | Generalization | Test on **unseen images of known Pokemon** |
+
+## 📊 Evaluation Results
+
+### Quick Comparison
+| Metric | Vanilla | RAG | Tuned |
+| :--- | :---: | :---: | :---: |
+| **Gen 1-2 Accuracy (v5)** | 23.5% | **70.6%** | 17.6% |
+| **OOD (Gen 3+) Accuracy (v5)** | 16.7% | 16.7%* | 16.7% |
+| **Generalization (v6)** | 86.7% | **100%** | 80.0% |
+
+> *RAG is restricted to Gen 1-2 DB for fair comparison, so Gen 3+ matches are intentionally limited.
+
+### Key Findings
+
+1. **RAG dominates accuracy**: 100% on generalization test, 70.6% on trained data
+2. **Tuned model overfits**: Performs worse than Vanilla on new images of the same Pokemon (80% vs 86.7%)
+3. **Tuned model hallucinates on OOD**: Confidently names unseen Pokemon incorrectly (e.g., Lickilicky → "Gastly")
+
+### Sample Results (v3/v4)
+
+| Image | Ground Truth | Vanilla | RAG | Tuned |
 | :---: | :---: | :--- | :--- | :--- |
-| <img src="data/pokemon/images/pokemon_117.jpg" width="100"><br>**Umbreon**<br>(Gen 2) | Umbreon<br>(블래키) | ✅ **Correct**<br>"This is Umbreon." | ✅ **Correct**<br>"This is Umbreon (블래키)." | ✅ **Correct**<br>"This is Umbreon." |
-| <img src="data/pokemon/images/pokemon_025.jpg" width="100"><br>**Staryu**<br>(Gen 1) | Staryu<br>(별가사리) | ⚠️ **Hallucination**<br>"Staraptor" | ✅ **Correct**<br>"This is Staryu (별가사리)."<br>*(Fixed via metadata update)* | ❌ **Literal**<br>"Star-shaped object" |
-| <img src="data/pokemon/images/pokemon_440.jpg" width="100"><br>**Riolu**<br>(Gen 4) | Riolu<br>(리오르) | ❌ **Hallucination**<br>"Umbreon" | ⚠️ **Gen 1-2 Similar Match**<br>"Umbreon/Glaceon"<br>*(Restricted to Gen 1-2 DB)* | ❌ **Hallucination**<br>"Glaceon" |
-| <img src="data/pokemon/images/pokemon_411.jpg" width="100"><br>**Gastrodon**<br>(Gen 4) | Gastrodon<br>(트리토돈) | ❌ **Hallucination**<br>"Gallade" | ⚠️ **Gen 1-2 Similar Match**<br>"Mawile/Slug-like"<br>*(Restricted to Gen 1-2 DB)* | ❌ **Hallucination**<br>"Gallade" |
-
-> **Note on RAG Fairness**: For a fair comparison with the Tuned Model (trained only on Gen 1-2), **RAG retrieval was restricted to Gen 1-2 Pokemon**.
-> Therefore, for Gen 3+ queries like Riolu, the RAG system is *expected* to retrieve the most visually similar Gen 1-2 Pokemon rather than the exact match. This confirms the system correctly follows constraints.
+| <img src="docs/reports/assets/images/pokemon_117.jpg" width="80"><br>**Umbreon** | Umbreon<br>(블래키) | ✅ Correct | ✅ Correct + Korean | ✅ Correct |
+| <img src="docs/reports/assets/images/pokemon_025.jpg" width="80"><br>**Staryu** | Staryu<br>(별가사리) | ⚠️ "Staraptor" | ✅ Correct + Korean | ❌ "Star-shaped object" |
 
 ### Conclusion
 | Approach | Best For |
 | :--- | :--- |
-| **RAG** | ✅ **Production** (800+ entities, highest accuracy) |
+| **RAG** | ✅ **Production** (800+ entities, highest accuracy, best generalization) |
 | **Fused** | Response formatting, Korean output style |
 | **Vanilla** | Quick prototyping |
 
-> **Recommendation**: Combine **RAG** (for accuracy) + **Fused Model** (for style) for optimal results.
+> **Recommendation**: Use **RAG** for accuracy. Fine-tuning is useful for **style/format control** only, not for knowledge injection.
 
 ## 📚 Lessons Learned
 
 ### 1. MLX LoRA Adapter Inference Issue (M-RoPE)
 - **Problem**: After successful LoRA training (Loss 0.0006), the adapter failed to generate output during inference.
 - **Root Cause**: `mlx_vlm` library's `generate()` function couldn't properly manage **M-RoPE (Multimodal Rotary Embedding)** states when dynamically expanded image tokens were used.
-- **Solution**: **Model Fusion** - Permanently merge LoRA weights into the base model, eliminating runtime adapter loading.
-- **Lesson**: When facing library-level limitations, consider **weight fusion** as an alternative to runtime adapter injection.
+- **Solution**: **Model Fusion** - Permanently merge LoRA weights into the base model.
 
 ### 2. EOS Token Learning Failure (Underfitting)
-- **Problem**: Phase 1-2 tuning produced repetitive garbage output (`!!!!`).
-- **Root Cause**: Training stopped too early (20-30 steps) while loss was still high (~8.0). Model never learned to generate the end-of-sequence token (`<|im_end|>`).
+- **Problem**: Early tuning produced repetitive garbage output (`!!!!`).
+- **Root Cause**: Training stopped too early (20-30 steps) while loss was still high (~8.0).
 - **Solution**: Increase training to **600+ steps** until loss converges below 1.0.
-- **Lesson**: For VLM fine-tuning, **sufficient training steps** are critical. Early stopping before EOS learning leads to infinite generation loops.
 
-### 3. 4-bit Quantization & Gradient Precision
-- **Problem**: Training LoRA adapters in 4-bit caused training instability and poor convergence (Loss stuck at ~8.0).
-- **Insight**: 4-bit quantized weights lose gradient precision during backpropagation.
-- **Lesson**: Always train adapters in **16-bit (Float16)**, then re-quantize after fusion for deployment.
+### 3. Why Use 16-bit Instead of 4-bit?
+- **Training**: 4-bit precision is too coarse to capture the **subtle weight updates (gradients)** needed for learning. These updates simply vanish to zero. Thus, training **must** use 16-bit.
+- **Fusion**: You cannot directly add 16-bit LoRA weights to a 4-bit model. You must **dequantize** the base model to 16-bit, merge weights, and then re-quantize to 4-bit.
 
 ### 4. RAG vs Fine-tuning Trade-off
 - **Finding**: For 800+ entity identification, RAG outperformed fine-tuning in both accuracy and cost.
-- **Why**: Fine-tuning requires massive data per entity; RAG only needs one indexed image per entity.
-- **Lesson**: For **large-scale entity recognition**, prioritize RAG over fine-tuning. Use fine-tuning for **style/format control** only.
+- **Lesson**: For **large-scale entity recognition**, prioritize RAG over fine-tuning.
 
-### 5. Prompt Engineering Impact
-- **Observation**: Adding "Pokemon" hint to prompt triggered hallucinations (Staryu → Staraptor).
-- **Insight**: Domain-specific keywords can bias the model toward linguistically similar (but visually incorrect) answers.
-- **Lesson**: Test both generic and hinted prompts; sometimes **less context is better**.
+### 5. Substring Match Bug in RAG Metadata
+- **Problem**: "signature" matched "natu" → Piplup was labeled as Natu.
+- **Solution**: Use **Regex with Word Boundaries** (`\b{name}\b`).
 
-### 6. Substring Match Bug in RAG Metadata
-- **Problem**: Piplup was incorrectly identified as **Natu (네이티)** in the RAG UI.
-- **Root Cause**: The automated labeling script used `if name in caption.lower()`. The word **"signature"** (frequent in captions) contains **"natu"**, triggering a false positive for Natu.
-- **Solution**: Updated the script to use **Regex with Word Boundaries** (`\b{name}\b`) to ensure only full Pokemon names are matched.
-- **Lesson**: When performing keyword-based automated labeling, always use **word boundaries** to prevent substring-induced mislabeling.
-
-### 7. Code-Level Debugging Insights
-
-| Issue | Symptom | Root Cause | Fix |
-| :--- | :--- | :--- | :--- |
-| **RAG returning empty hints** | RAG mode same as Vanilla | Script read `documents` (empty) instead of `metadatas['caption']` | Access `results['metadatas'][0][0]['caption']` |
-| **PyTorch tensor error** | `ValueError: Only PyTorch tensors supported` | HuggingFace fast image processor incompatible with MLX | Set `use_fast=False` + wrap with numpy converter |
-| **Image path mismatch** | `FileNotFoundError` | JSONL had `data_pokemon/` but actual path was `data/pokemon/` | String replace in data loader |
-| **Quantize argument order** | Silent wrong quantization | `nn.quantize(model, bits, group_size)` → actually `(model, group_size, bits)` | Check MLX API docs |
-| **Config missing quantization info** | Model loads as Float16 | Fused model config.json lacked `quantization` block | Patch config post-save |
+### 6. Trade-off: Fine-tuning vs. Visual Generalization (Regression)
+- **Evidence**: In v6 evaluation, the Vanilla model correctly identified **Dragonite**, but the Tuned model misclassified it as **Charizard**.
+- **Insight**: Training on a small dataset (~500 images) constrained the model to the training distribution, **suggesting a suspected regression** in pre-trained visual discrimination capabilities for unseen image styles.
+- **Lesson**: If generalization is critical, relying solely on fine-tuning is risky. **RAG** or **Ensemble** methods are safer.
 
 ## 🚀 Quick Start
 
@@ -129,9 +136,13 @@ uvicorn src.server:app --reload --port 8000
 | `scripts/train/fuse_vlm.py` | Model fusion script |
 | `models/fused_qwen2_vl_4bit_quantized/` | Final fused model (4.3GB) |
 
-## 📄 Reports
-- [EVALUATION_REPORT_v3.md](docs/reports/EVALUATION_REPORT_v3.md) - Generic prompt evaluation
-- [EVALUATION_REPORT_v4.md](docs/reports/EVALUATION_REPORT_v4.md) - Hinted prompt evaluation
+## 📄 Detailed Reports
+| Report | Description |
+| :--- | :--- |
+| [v3 - Generic Prompt](docs/reports/EVALUATION_REPORT_v3.md) | Baseline without "Pokemon" hint |
+| [v4 - Hinted Prompt](docs/reports/EVALUATION_REPORT_v4.md) | With "What Pokemon is this?" |
+| [v5 - OOD Trap Test](docs/reports/EVALUATION_REPORT_v5_OOD_TRAP_TEST.md) | Gen 3+ unseen species test |
+| [v6 - Generalization](docs/reports/EVALUATION_REPORT_v6_GENERALIZATION.md) | Unseen images of known Pokemon |
 
 ## ⚠️ Disclaimer
 - **Unofficial Project**: Not affiliated with Nintendo, Game Freak, or The Pokémon Company.

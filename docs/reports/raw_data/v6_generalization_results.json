@@ -1,0 +1,137 @@
+[
+  {
+    "name": "Pikachu",
+    "image_path": "data/pokemon/eval_v6_images/pikachu.png",
+    "ground_truth": "Pikachu",
+    "vanilla_output": "This is Pikachu.\n\nThis is 피카츄.",
+    "rag_output": "This is Pikachu (피카츄). It is a GEN I Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.03) This is Pikachu (피카츄). It is a GEN I Pokemon. Pika...",
+    "tuned_output": "This is Pikachu.\n\nThis is 피카츄."
+  },
+  {
+    "name": "Charizard",
+    "image_path": "data/pokemon/eval_v6_images/charizard.png",
+    "ground_truth": "Charizard",
+    "vanilla_output": "This is Charizard. \n\nCharizard is a Dragon/Fire-type Pokémon.",
+    "rag_output": "This is Charizard (리자몽). It is a GEN I Pokemon. A fiery-tailed Charizard strikes a formidable pose, ready for battle with its wings outstretched.",
+    "rag_retrieval_log": "(Dist: 0.02) This is Charizard (리자몽). It is a GEN I Pokemon. A ...",
+    "tuned_output": "This is Charizard. \n\nCharizard is a Fire/Dragon-type Pokémon."
+  },
+  {
+    "name": "Bulbasaur",
+    "image_path": "data/pokemon/eval_v6_images/bulbasaur.png",
+    "ground_truth": "Bulbasaur",
+    "vanilla_output": "This is Bulbasaur. \n\nBulbasaur is a Grass/Poison-type Pokémon. It evolves into Ivysaur and then Venusaur.",
+    "rag_output": "This is Bulbasaur. It is a GEN I Pokemon. A cheerful Bulbasaur ready for its next Pokémon adventure.\n\n이상해씨입니다. 이것은 GEN I의 페미지입니다. 행복한 Bulbasaur가 다음의 페미지 여행을 준비합니다.",
+    "rag_retrieval_log": "(Dist: 0.02) This is Bulbasaur (이상해씨). It is a GEN I Pokemon. A...",
+    "tuned_output": "This is Bulbasaur. \n\nBulbasaur is a Grass/Poison-type Pokémon. It evolves into Ivysaur and then Venusaur."
+  },
+  {
+    "name": "Squirtle",
+    "image_path": "data/pokemon/eval_v6_images/squirtle.png",
+    "ground_truth": "Squirtle",
+    "vanilla_output": "This is Squirtle. \n\nThis is Squirtle.",
+    "rag_output": "This is Squirtle (꼬부기). It is a GEN I Pokemon. A friendly Squirtle awaits its next adventure with big, bright eyes and a gentle smile.",
+    "rag_retrieval_log": "(Dist: 0.03) This is Squirtle (꼬부기). It is a GEN I Pokemon. A f...",
+    "tuned_output": "This is Squirtle. \n\nThis is Squirtle."
+  },
+  {
+    "name": "Jigglypuff",
+    "image_path": "data/pokemon/eval_v6_images/jigglypuff.png",
+    "ground_truth": "Jigglypuff",
+    "vanilla_output": "This is Jigglypuff.",
+    "rag_output": "This is Jigglypuff (푸린). It is a GEN I Pokemon. A cheerful pink Pokémon, Jigglypuff, with large, captivating blue eyes and a tuft of hair curling on its forehead, energizing fans with its iconic and cute appearance.",
+    "rag_retrieval_log": "(Dist: 0.02) This is Jigglypuff (푸린). It is a GEN I Pokemon. A ...",
+    "tuned_output": "This is Jigglypuff."
+  },
+  {
+    "name": "Eevee",
+    "image_path": "data/pokemon/eval_v6_images/eevee.png",
+    "ground_truth": "Eevee",
+    "vanilla_output": "This is Eevee.",
+    "rag_output": "This is Eevee (이브이). It is a GEN I Pokemon. An illustration of Eevee, a brown fox-like Pokémon with large ears and a bushy tail, giving a friendly and cute gaze.",
+    "rag_retrieval_log": "(Dist: 0.03) This is Eevee (이브이). It is a GEN I Pokemon. An ill...",
+    "tuned_output": "This is Eevee."
+  },
+  {
+    "name": "Meowth",
+    "image_path": "data/pokemon/eval_v6_images/meowth.png",
+    "ground_truth": "Meowth",
+    "vanilla_output": "This is Meowth (미우스) from the Pokémon series.",
+    "rag_output": "This is Meowth (나옹). It is a GEN I Pokemon. A cheerful Meowth from the Pokémon series is excitedly waving its paws with a wide-open smile.",
+    "rag_retrieval_log": "(Dist: 0.04) This is Meowth (나옹). It is a GEN I Pokemon. A chee...",
+    "tuned_output": "This is Meowth (미우스) from the Pokémon series."
+  },
+  {
+    "name": "Psyduck",
+    "image_path": "data/pokemon/eval_v6_images/psyduck.png",
+    "ground_truth": "Psyduck",
+    "vanilla_output": "This is the Pokémon named \"Psyduck\" in English and \"심리조\" in Korean.",
+    "rag_output": "This is Psyduck (고라파덕). It is a GEN I Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.02) This is Psyduck (고라파덕). It is a GEN I Pokemon. A w...",
+    "tuned_output": "This is the Pokémon named \"Psyduck\" in English and \"심리조\" in Korean."
+  },
+  {
+    "name": "Snorlax",
+    "image_path": "data/pokemon/eval_v6_images/snorlax.png",
+    "ground_truth": "Snorlax",
+    "vanilla_output": "This is Snorlax. \n\nSnorlax",
+    "rag_output": "This is Snorlax. It is a GEN I Pokemon. A smiling Snorlax sits contentedly with its arms resting at its sides and eyes closed in relaxation. \n\nThis is Snorlax. It is a GEN I Pokemon. A smiling Snorlax sits contentedly with its arms resting at its sides and eyes closed in relaxation.",
+    "rag_retrieval_log": "(Dist: 0.02) This is Snorlax (잠만보). It is a GEN I Pokemon. A sm...",
+    "tuned_output": "This is Snorlax. \n\nSnorlax"
+  },
+  {
+    "name": "Gengar",
+    "image_path": "data/pokemon/eval_v6_images/gengar.png",
+    "ground_truth": "Gengar",
+    "vanilla_output": "This is Gengar. \n\nThis is Gengar.",
+    "rag_output": "This is Gengar (팬텀). It is a GEN I Pokemon. A mischievous Gengar with a menacing smile ready for a ghostly Pokémon battle.",
+    "rag_retrieval_log": "(Dist: 0.03) This is Gengar (팬텀). It is a GEN I Pokemon. A misc...",
+    "tuned_output": "This is Gengar. \n\nThis is Gengar."
+  },
+  {
+    "name": "Machamp",
+    "image_path": "data/pokemon/eval_v6_images/machamp.png",
+    "ground_truth": "Machamp",
+    "vanilla_output": "This is Groudon. \n\nThis is 굴돈 in Korean.",
+    "rag_output": "This is Machamp (괴력몬). It is a GEN I Pokemon. A powerful Machamp flexes its muscles, ready for a Pokemon battle.",
+    "rag_retrieval_log": "(Dist: 0.03) This is Machamp (괴력몬). It is a GEN I Pokemon. A po...",
+    "tuned_output": "This is the Pokémon Groudon. \n\nPokemon: Groudon\nPokemon: 굴돈"
+  },
+  {
+    "name": "Alakazam",
+    "image_path": "data/pokemon/eval_v6_images/alakazam.png",
+    "ground_truth": "Alakazam",
+    "vanilla_output": "This is the Pokémon Garchomp. \n\nPokemon: Garchomp\nPokemon: 가르롭",
+    "rag_output": "This is Alakazam (후딘). It is a GEN I Pokemon. Alakazam, the Psychic-type Pokémon, wielding its signature twin spoons with a focused and battle-ready stance.",
+    "rag_retrieval_log": "(Dist: 0.04) This is Alakazam (후딘). It is a GEN I Pokemon. Alak...",
+    "tuned_output": "This is the Pokémon called \"Gallade\" in English and \"가라데\" in Korean."
+  },
+  {
+    "name": "Gyarados",
+    "image_path": "data/pokemon/eval_v6_images/gyarados.png",
+    "ground_truth": "Gyarados",
+    "vanilla_output": "This is the Pokémon Gyarados.",
+    "rag_output": "This is Gyarados (갸라도스). It is a GEN I Pokemon. A powerful Gyarados unleashes a roar, showcasing its fierce expression and serpentine body, ready for battle.",
+    "rag_retrieval_log": "(Dist: 0.03) This is Gyarados (갸라도스). It is a GEN I Pokemon. A ...",
+    "tuned_output": "This is the Pokémon Gyarados."
+  },
+  {
+    "name": "Dragonite",
+    "image_path": "data/pokemon/eval_v6_images/dragonite.png",
+    "ground_truth": "Dragonite",
+    "vanilla_output": "This is a Dragonite. \n\nThis is a Dragonite.",
+    "rag_output": "This is Dragonite (망나뇽). It is a GEN I Pokemon. A smiling Dragonite, with its distinct orange skin, large wings, and horned head, stands ready in a friendly pose.",
+    "rag_retrieval_log": "(Dist: 0.05) This is Dragonite (망나뇽). It is a GEN I Pokemon. A ...",
+    "tuned_output": "This is a Charizard, a Pokémon from the Pokémon series. In Korean, it is called \"차리아드\" (Chariard)."
+  },
+  {
+    "name": "Mewtwo",
+    "image_path": "data/pokemon/eval_v6_images/mewtwo.png",
+    "ground_truth": "Mewtwo",
+    "vanilla_output": "This is Mewtwo, a Pokémon from the Pokémon series. In Korean, it is called \"메투우\" (Meutu).",
+    "rag_output": "This is Mewtwo (뮤츠). It is a GEN I Pokémon. \"Mewtwo, a powerful psychic-type Pokémon, stands poised and ready for battle.\"",
+    "rag_retrieval_log": "(Dist: 0.05) This is Mewtwo (뮤츠). It is a GEN I Pokemon. \"Mewtw...",
+    "tuned_output": "This is Mewtwo, a Pokémon from the Pokémon series. In Korean, it is called \"미투\" (Miteo)."
+  }
+]

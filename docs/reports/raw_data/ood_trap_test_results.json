@@ -1,0 +1,662 @@
+[
+  {
+    "images": [
+      "data/pokemon/images/pokemon_117.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Umbreon (블래키). It is a GEN II Pokemon. A sleek, midnight blue-colored Pokémon known as Umbreon with bright, crimson eyes and yellow ring-like patterns on its ears and body stands attentively."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_117.jpg",
+    "ground_truth": "This is Umbreon (블래키). It is a GEN II Pokemon. A sleek, midnight blue-colored Pokémon known as Umbreon with bright, crimson eyes and yellow ring-like patterns on its ears and body stands attentively.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is Umbreon.",
+    "rag_output": "This is Umbreon (블래키). It is a GEN II Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Umbreon (블래키). It is a GEN II Po...",
+    "tuned_output": "This is Umbreon."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_025.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Staryu (별가사리). It is a GEN I Pokemon. A five-pointed, star-shaped illustration of a Staryu Pokémon with a reddish center surrounded by a yellow and beige body."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_025.jpg",
+    "ground_truth": "This is Staryu (별가사리). It is a GEN I Pokemon. A five-pointed, star-shaped illustration of a Staryu Pokémon with a reddish center surrounded by a yellow and beige body.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon called \"Staraptor\" in English and \"별사다리\" in Korean.",
+    "rag_output": "This is Staryu (별가사리). It is a GEN I Pokemon. A five-pointed, star-shaped illustration of a Staryu Pokémon with a reddish center surrounded by a yellow and beige body.\n\nThis is Staryu (별가사리). It is a GEN I Pokemon. A five-pointed, star-shaped illustration of a Staryu Pokémon with a reddish center surrounded by a yellow and beige body.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Staryu (별가사리). It is a GEN I Pok...",
+    "tuned_output": "This is the Pokémon called \"Staraptor\" in English and \"별사다리\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_406.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A cheerful pink cherry-like Pokémon with a big leaf on its head and a smaller companion berry floating nearby."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_406.jpg",
+    "ground_truth": "A cheerful pink cherry-like Pokémon with a big leaf on its head and a smaller companion berry floating nearby.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is a picture of a Pokémon called \"Cherry\" in English and \"체리\" in Korean.",
+    "rag_output": "This is the Pokémon called \"Cherry\" in English and \"복숭아\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) A cheerful pink cherry-like Pokémon with...",
+    "tuned_output": "This is the Pokémon called \"Cherry\" in English and \"체리\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_344.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A blue, crab-like Pokémon with a hard shell and prominent claws stares intently, ready for battle."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_344.jpg",
+    "ground_truth": "A blue, crab-like Pokémon with a hard shell and prominent claws stares intently, ready for battle.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon Zoroark.",
+    "rag_output": "This is the Pokémon named \"Groudon.\"",
+    "rag_retrieval_log": "(Dist: 0.00) A blue, crab-like Pokémon with a hard sh...",
+    "tuned_output": "This is the Pokémon named \"Groudon.\""
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_276.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A smiling blue and cream-colored animated whale with prominent fins and a cheerful expression."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_276.jpg",
+    "ground_truth": "A smiling blue and cream-colored animated whale with prominent fins and a cheerful expression.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Seel\" in English and \"세일\" in Korean.",
+    "rag_output": "This is the Pokémon named \"Seel\" in English and \"세일\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) A smiling blue and cream-colored animate...",
+    "tuned_output": "This is the Pokémon named \"Goldeen\" in English and \"골든\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_145.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A colorful illustration of a slug-like creature with a flaming shell on its back."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_145.jpg",
+    "ground_truth": "A colorful illustration of a slug-like creature with a flaming shell on its back.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Caterpie\" in English and \"카터피\" in Korean.",
+    "rag_output": "This is the Pokémon named \"Caterpie\" in English and \"카터피\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) A colorful illustration of a slug-like c...",
+    "tuned_output": "This is the Pokémon named \"Caterpie\" in English and \"카터피\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_107.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A smiling green Pokémon with a flower on its back and red eyes, resembling a small walking plant."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_107.jpg",
+    "ground_truth": "A smiling green Pokémon with a flower on its back and red eyes, resembling a small walking plant.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon called \"Venusaur\" in English and \"버나우\" in Korean.",
+    "rag_output": "This is the Pokémon called \"Venusaur\" in English and \"버나우\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) A smiling green Pokémon with a flower on...",
+    "tuned_output": "This is the Pokémon called \"Venusaur\" in English and \"버나우\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_092.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Togetic (토게틱). It is a GEN II Pokemon. A cheerful Togetic, the evolution of Togepi, with its white body and triangular red and blue markings, looks ready for its next playful adventure."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_092.jpg",
+    "ground_truth": "This is Togetic (토게틱). It is a GEN II Pokemon. A cheerful Togetic, the evolution of Togepi, with its white body and triangular red and blue markings, looks ready for its next playful adventure.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean.",
+    "rag_output": "This is Togetic (토게틱). It is a GEN II Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Togetic (토게틱). It is a GEN II Po...",
+    "tuned_output": "This is the Pokémon named \"Gardevoir\" in English and \"가르디보어\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_684.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A ferocious and stylized illustration of a bipedal, mechanical dragon-like creature with icy blue accents and a menacing posture."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_684.jpg",
+    "ground_truth": "A ferocious and stylized illustration of a bipedal, mechanical dragon-like creature with icy blue accents and a menacing posture.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon Zoroark.",
+    "rag_output": "This is the Pokémon Zoroark.",
+    "rag_retrieval_log": "(Dist: 0.00) A ferocious and stylized illustration of...",
+    "tuned_output": "This is the Pokémon Zoroark."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_033.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Pinsir (쁘사이저). It is a GEN I Pokemon. An illustration of Pinsir, a bug-type Pokémon, with large pincers and a fierce expression ready for battle."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_033.jpg",
+    "ground_truth": "This is Pinsir (쁘사이저). It is a GEN I Pokemon. An illustration of Pinsir, a bug-type Pokémon, with large pincers and a fierce expression ready for battle.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Groudon.\"",
+    "rag_output": "This is Pinsir (쁘사이저). It is a GEN I Pokemon. An illustration of Pinsir, a bug-type Pokémon, with large pincers and a fierce expression ready for battle.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Pinsir (쁘사이저). It is a GEN I Pok...",
+    "tuned_output": "This is the Pokémon named \"Groudon.\""
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_031.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Magmar (마그마). It is a GEN I Pokemon. An illustration of Magmar, a fiery, duck-billed Pokémon with a body adorned with flame-like patterns, a tail tipped with fire, and clawed hands and feet."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_031.jpg",
+    "ground_truth": "This is Magmar (마그마). It is a GEN I Pokemon. An illustration of Magmar, a fiery, duck-billed Pokémon with a body adorned with flame-like patterns, a tail tipped with fire, and clawed hands and feet.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Growlithe\" in English and \"Growlithe\" in Korean.",
+    "rag_output": "This is Magmar (마그마). It is a GEN I Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Magmar (마그마). It is a GEN I Poke...",
+    "tuned_output": "This is the Pokémon named \"Growlithe\" in English and \"Growlithe\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_098.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A cheerful pink and fluffy sheep-like creature with a whimsical curl on its forehead and a blue orb at the end of its tail."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_098.jpg",
+    "ground_truth": "A cheerful pink and fluffy sheep-like creature with a whimsical curl on its forehead and a blue orb at the end of its tail.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Lopunny\" in English and \"로분니\" in Korean.",
+    "rag_output": "This is a picture of the Pokémon named \"Lopunny.\"",
+    "rag_retrieval_log": "(Dist: 0.00) A cheerful pink and fluffy sheep-like cr...",
+    "tuned_output": "This is the Pokémon named \"Lopunny\" in English and \"로분니\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_269.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A serene animated character with a green humanoid appearance holds a pink flower in one hand and a blue flower in the other, exuding a peaceful and harmonious vibe."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_269.jpg",
+    "ground_truth": "A serene animated character with a green humanoid appearance holds a pink flower in one hand and a blue flower in the other, exuding a peaceful and harmonious vibe.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon called \"Gardevoir\" in English and \"가드로어\" in Korean.",
+    "rag_output": "This is the Pokémon called \"Gardevoir\" in English and \"가드로어\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) A serene animated character with a green...",
+    "tuned_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_323.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Clefable (픽시). It is a GEN I Pokemon. A cheerful pink Clefable with curled hair-like feature, waving its pointed fingered wings and smiling."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_323.jpg",
+    "ground_truth": "This is Clefable (픽시). It is a GEN I Pokemon. A cheerful pink Clefable with curled hair-like feature, waving its pointed fingered wings and smiling.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean.",
+    "rag_output": "This is Clefable (픽시). It is a GEN I Pokemon. A cheerful pink Clefable with curled hair-like feature, waving its pointed fingered wings and smiling.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Clefable (픽시). It is a GEN I Pok...",
+    "tuned_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_830.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A confident, bipedal yellow feline Pokémon brandishes a silver pendulum with its right arm raised in triumph."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_830.jpg",
+    "ground_truth": "A confident, bipedal yellow feline Pokémon brandishes a silver pendulum with its right arm raised in triumph.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is Jigglypuff.\n\nThis is Jigglypuff.",
+    "rag_output": "This is Jigglypuff.\n\nThis is Jigglypuff.",
+    "rag_retrieval_log": "(Dist: 0.00) A confident, bipedal yellow feline Pokém...",
+    "tuned_output": "This is Jigglypuff.\n\nThis is Jigglypuff."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_027.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "An animated character resembling a jester with a smiling face, blue appendages, and red orbs on its hands and body, assumes a playful, welcoming pose."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_027.jpg",
+    "ground_truth": "An animated character resembling a jester with a smiling face, blue appendages, and red orbs on its hands and body, assumes a playful, welcoming pose.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean.",
+    "rag_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) An animated character resembling a jeste...",
+    "tuned_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_224.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A graceful, humanoid Pokémon with a green and white color scheme, featuring large red eyes and long, leaf-like appendages."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_224.jpg",
+    "ground_truth": "A graceful, humanoid Pokémon with a green and white color scheme, featuring large red eyes and long, leaf-like appendages.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Mimikkyu\" (ミミッキュー, Mimikkue) in Japanese and \"Mimikyu\" (ミミクイ, Mimikyu) in English.",
+    "rag_output": "This is the Pokémon named \"Gardevoir\" in English and \"가드로어\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) A graceful, humanoid Pokémon with a gree...",
+    "tuned_output": "This is the Pokémon named \"Mimikkyo\" ( Mimikyu in English)."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_674.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Kadabra (윤겔라). It is a GEN I Pokemon. A poised Kadabra, an animated psychic-type Pokémon, brandishing a silver spoon, ready to unleash its telekinetic powers."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_674.jpg",
+    "ground_truth": "This is Kadabra (윤겔라). It is a GEN I Pokemon. A poised Kadabra, an animated psychic-type Pokémon, brandishing a silver spoon, ready to unleash its telekinetic powers.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Groudon\" in English and \"그루돈\" in Korean.",
+    "rag_output": "This is the Pokémon called **Kadabra** (윤겔라). It is a GEN I Pokémon.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Kadabra (윤겔라). It is a GEN I Pok...",
+    "tuned_output": "This is the Pokémon named \"Groudon\" in English and \"그루돈\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_271.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A whimsical drawing of a purple, amorphous creature with a squiggly antenna, simplistic eyes, and two black patches on its front, reminiscent of a playful cartoon character."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_271.jpg",
+    "ground_truth": "A whimsical drawing of a purple, amorphous creature with a squiggly antenna, simplistic eyes, and two black patches on its front, reminiscent of a playful cartoon character.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Gengar\" in English and \"강가르\" in Korean.",
+    "rag_output": "This is the Pokémon named \"Gengar\" in English and \"강가\" in Korean.",
+    "rag_retrieval_log": "(Dist: 0.00) A whimsical drawing of a purple, amorpho...",
+    "tuned_output": "This is the Pokémon named \"Gengar\" in English and \"강가\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_727.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Beedrill (독침붕). It is a GEN I Pokemon. An illustration of a Beedrill, a bee-like Pokémon with large stinger-like forelimbs and wings, showcasing its distinctive yellow and black pattern."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_727.jpg",
+    "ground_truth": "This is Beedrill (독침붕). It is a GEN I Pokemon. An illustration of a Beedrill, a bee-like Pokémon with large stinger-like forelimbs and wings, showcasing its distinctive yellow and black pattern.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is a Butterfree. \n\nThis is a 버터플.",
+    "rag_output": "This is Beedrill (독침붕). It is a GEN I Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Beedrill (독침붕). It is a GEN I Po...",
+    "tuned_output": "This is the Pokémon Butterfree.\n\nThis is the Pokémon 버터플.\n\nThis is the Pokémon 버터플."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_409.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "A cheerful blue duck-like Pokémon with a prominent swirl pattern on its stomach poses playfully, ready for its next adventure."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_409.jpg",
+    "ground_truth": "A cheerful blue duck-like Pokémon with a prominent swirl pattern on its stomach poses playfully, ready for its next adventure.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Drapion\" in English and \"드라피온\" in Korean.",
+    "rag_output": "This is the Pokémon named \"Dedenne\" (デデネ).",
+    "rag_retrieval_log": "(Dist: 0.00) A cheerful blue duck-like Pokémon with a...",
+    "tuned_output": "This is the Pokémon named \"Swampert\" (Swampert) in English and \"하수어\" (Haseo) in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_006.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Cubone (탕구리). It is a GEN I Pokemon. A Cubone, the lonely Pokémon, sits clutching its signature bone, its face hidden by a skull helmet."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_006.jpg",
+    "ground_truth": "This is Cubone (탕구리). It is a GEN I Pokemon. A Cubone, the lonely Pokémon, sits clutching its signature bone, its face hidden by a skull helmet.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is a picture of the Pokémon named \"Cubone.\" In English, it is called \"Cubone,\" and in Korean, it is called \"크루본\" (Kreu-bon).",
+    "rag_output": "This is Cubone (탕구리). It is a GEN I Pokemon. A Cubone, the lonely Pokémon, sits clutching its signature bone, its face hidden by a skull helmet.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Cubone (탕구리). It is a GEN I Poke...",
+    "tuned_output": "This is the Pokémon named \"Cubone\" in English and \"크라우드\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_166.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Hitmontop (카포에라). It is a GEN II Pokemon. \"A Hitmontop, a Fighting-type Pokémon, spinning on its head with its legs outstretched, ready for battle.\""
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_166.jpg",
+    "ground_truth": "This is Hitmontop (카포에라). It is a GEN II Pokemon. \"A Hitmontop, a Fighting-type Pokémon, spinning on its head with its legs outstretched, ready for battle.\"",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is the Pokémon named \"Dugtrio\" in English and \"도그트로\" in Korean.",
+    "rag_output": "This is Hitmontop (카포에라). It is a GEN II Pokemon. \"A Hitmontop, a Fighting-type Pokémon, spinning on its head with its legs outstretched, ready for battle.\"",
+    "rag_retrieval_log": "(Dist: 0.00) This is Hitmontop (카포에라). It is a GEN II...",
+    "tuned_output": "This is the Pokémon named \"Dugtrio\" in English and \"도그트로\" in Korean."
+  },
+  {
+    "images": [
+      "data/pokemon/images/pokemon_542.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Persian (페르시온). It is a GEN I Pokemon. An illustration of Persian, a cream-colored, feline Pokémon with a lithe body, a red forehead gem, and a gracefully curled tail."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_542.jpg",
+    "ground_truth": "This is Persian (페르시온). It is a GEN I Pokemon. An illustration of Persian, a cream-colored, feline Pokémon with a lithe body, a red forehead gem, and a gracefully curled tail.",
+    "type": "TRAINED (Gen 1-2)",
+    "vanilla_output": "This is a Persian Pokémon. In Korean, it is called \"페르시안\" (Peurisan).",
+    "rag_output": "This is Persian (페르시온). It is a GEN I Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.00) This is Persian (페르시온). It is a GEN I Po...",
+    "tuned_output": "This is the Pokémon Meowth. In Korean, it is called \"미우스\" (Miusu)."
+  },
+  {
+    "images": [
+      "data_pokemon/images/pokemon_030.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Electivire (에레키블). It is a GEN IV Pokemon. An animated image of Electivire, a powerful Electric-type Pokémon, poised in a dynamic battle stance ready to unleash its next electrifying move."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_030.jpg",
+    "ground_truth": "This is Electivire (에레키블). It is a GEN IV Pokemon. An animated image of Electivire, a powerful Electric-type Pokémon, poised in a dynamic battle stance ready to unleash its next electrifying move.",
+    "type": "UNTRAINED (Gen 3+ Trap)",
+    "vanilla_output": "This is the Pokémon Zoroark.",
+    "rag_output": "This is Electabuzz (에레브). It is a GEN I Pokémon.",
+    "rag_retrieval_log": "(Dist: 0.20) This is Electabuzz (에레브). It is a GEN I ...",
+    "tuned_output": "This is the Pokémon Zoroark."
+  },
+  {
+    "images": [
+      "data_pokemon/images/pokemon_439.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Munchlax (먹고자). It is a GEN IV Pokemon. \"A cheerful Munchlax smiling wide, ready for its next meal or battle!\""
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_439.jpg",
+    "ground_truth": "This is Munchlax (먹고자). It is a GEN IV Pokemon. \"A cheerful Munchlax smiling wide, ready for its next meal or battle!\"",
+    "type": "UNTRAINED (Gen 3+ Trap)",
+    "vanilla_output": "This is the Pokémon named \"Dedenne\" in English and \"디덴네\" in Korean.",
+    "rag_output": "This is Snorlax (잠만보). It is a GEN I Pokemon. A smiling Snorlax sits contentedly with its arms resting at its sides and eyes closed in relaxation.",
+    "rag_retrieval_log": "(Dist: 0.28) This is Snorlax (잠만보). It is a GEN I Pok...",
+    "tuned_output": "This is the Pokémon named \"Dugtrio\" in English and \"도그트로\" in Korean."
+  },
+  {
+    "images": [
+      "data_pokemon/images/pokemon_469.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Glaceon (글레이시아). It is a GEN IV Pokemon. A poised Glaceon, an ice-type Pokémon evolution of Eevee, displaying its cool blue color scheme and ice-crystal ear and tail features."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_469.jpg",
+    "ground_truth": "This is Glaceon (글레이시아). It is a GEN IV Pokemon. A poised Glaceon, an ice-type Pokémon evolution of Eevee, displaying its cool blue color scheme and ice-crystal ear and tail features.",
+    "type": "UNTRAINED (Gen 3+ Trap)",
+    "vanilla_output": "This is Glaceon, a Pokémon from the Pokémon series.",
+    "rag_output": "This is Umbreon (블래키). It is a GEN II Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.21) This is Umbreon (블래키). It is a GEN II Po...",
+    "tuned_output": "This is Glaceon, a Pokémon from the Pokémon series."
+  },
+  {
+    "images": [
+      "data_pokemon/images/pokemon_460.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Lickilicky (내룸벨트). It is a GEN IV Pokemon. A happy pink Lickilicky, a Pokémon with a prominent tongue and a curvy yellow pattern on its belly, stands ready for its next adventure."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_460.jpg",
+    "ground_truth": "This is Lickilicky (내룸벨트). It is a GEN IV Pokemon. A happy pink Lickilicky, a Pokémon with a prominent tongue and a curvy yellow pattern on its belly, stands ready for its next adventure.",
+    "type": "UNTRAINED (Gen 3+ Trap)",
+    "vanilla_output": "This is the Pokémon named \"Dugtrio\" in English and \"도그트로\" in Korean.",
+    "rag_output": "This is Lickitung (내루미). It is a GEN I Pokemon. A cheerful pink Lickitung with its long tongue lolling out is ready for a Pokémon battle.",
+    "rag_retrieval_log": "(Dist: 0.15) This is Lickitung (내루미). It is a GEN I P...",
+    "tuned_output": "This is the Pokémon named \"Gastly\" in English and \"가스트리\" in Korean."
+  },
+  {
+    "images": [
+      "data_pokemon/images/pokemon_465.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Togekiss (토게키스). It is a GEN IV Pokemon. A cheerful Togekiss soars gracefully with its white and blue-tipped wings spread wide, displaying its colorful triangular markings."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_465.jpg",
+    "ground_truth": "This is Togekiss (토게키스). It is a GEN IV Pokemon. A cheerful Togekiss soars gracefully with its white and blue-tipped wings spread wide, displaying its colorful triangular markings.",
+    "type": "UNTRAINED (Gen 3+ Trap)",
+    "vanilla_output": "This is a picture of the Pokémon \"Mamoswine\" (마모스와인).",
+    "rag_output": "This is Togekiss (토게키스). It is a GEN II Pokemon. A cheerful Togekiss, the evolution of Togepi, with its white body and triangular red and blue markings, looks ready for its next playful adventure.",
+    "rag_retrieval_log": "(Dist: 0.20) This is Togetic (토게틱). It is a GEN II Po...",
+    "tuned_output": "This is the Pokémon named \"Dawn Wings\" in English and \"조아라\" in Korean."
+  },
+  {
+    "images": [
+      "data_pokemon/images/pokemon_468.jpg"
+    ],
+    "messages": [
+      {
+        "role": "user",
+        "content": "What pokemon is this?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is Leafeon (리피아). It is a GEN IV Pokemon. Leafeon, the verdant, fox-like Pokémon with leafy ears and tail, stands poised in a serene pose."
+      }
+    ],
+    "image_path": "data/pokemon/images/pokemon_468.jpg",
+    "ground_truth": "This is Leafeon (리피아). It is a GEN IV Pokemon. Leafeon, the verdant, fox-like Pokémon with leafy ears and tail, stands poised in a serene pose.",
+    "type": "UNTRAINED (Gen 3+ Trap)",
+    "vanilla_output": "This is Flareon, a Fire-type Pokémon.",
+    "rag_output": "This is Flareon (부스터). It is a GEN I Pokemon.",
+    "rag_retrieval_log": "(Dist: 0.18) This is Flareon (부스터). It is a GEN I Pok...",
+    "tuned_output": "This is Flareon, a Fire-type Pokémon."
+  }
+]
