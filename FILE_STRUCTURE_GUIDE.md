@@ -26,11 +26,11 @@ mlx-vlm-rag-pokemon/
 │   │   └── evaluate_models_v4.py  # Final Eval (Hinted Prompt)
 │   └── setup/
 │       └── setup_pokemon_data.py  # Downloads and prepares data
-│
-├── tools/                      # Debug & Utility Scripts
-│   ├── test_fused_manual.py    # Manual verification of fused model
-│   ├── patch_quant_config.py   # Injects quantization config into JSON
-│   └── debug_rag_retrieval.py  # Debugging RAG metadata extraction
+│   │
+│   ├── debug/                  # Debug & Utility Scripts
+│   │   ├── test_fused_manual.py    # Manual verification of fused model
+│   │   ├── patch_quant_config.py   # Injects quantization config into JSON
+│   │   └── debug_rag_retrieval.py  # Debugging RAG metadata extraction
 │
 ├── docs/                       # Reports & Logs
 │   ├── reports/

@@ -6,7 +6,7 @@ import os
 import sys
 
 # Ensure imports work if needed
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 def test_fused():
     model_path = "models/fused_qwen2_vl_4bit"

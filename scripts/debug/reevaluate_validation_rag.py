@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from mlx_vlm import load, generate
 from mlx_vlm.prompt_utils import apply_chat_template
