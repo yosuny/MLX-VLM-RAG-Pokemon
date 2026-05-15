@@ -1,0 +1,60 @@
+RAG DB 공정성 검증 로그
+==================================================
+검증일: 2026-05-15
+DB 경로: chroma_db_fair
+DB 항목 수: 520
+스프라이트 수: 50
+최소 거리: 0.0175
+누수 의심 (Dist<0.01): 0개
+
+상세 결과:
+  abra: Dist=0.0361 → This is Abra (캐이시). It is a GEN I Pokemon. A yello
+  alakazam: Dist=0.0377 → This is Alakazam (후딘). It is a GEN I Pokemon. Alak
+  arcanine: Dist=0.0256 → A confident, fluffy, brown and cream-colored fox-l
+  articuno: Dist=0.0342 → A majestic blue bird Pokémon with expansive wings 
+  blastoise: Dist=0.0297 → This is Blastoise (거북왕). It is a GEN I Pokemon. A 
+  bulbasaur: Dist=0.0180 → This is Bulbasaur (이상해씨). It is a GEN I Pokemon. A
+  charizard: Dist=0.0248 → This is Charizard (리자몽). It is a GEN I Pokemon. A 
+  charmander: Dist=0.0175 → This is Charmander (파이리). It is a GEN I Pokemon. A
+  chikorita: Dist=0.0307 → This is Chikorita (치코리타). It is a GEN II Pokemon. 
+  clefable: Dist=0.0528 → This is Clefable (픽시). It is a GEN I Pokemon. A ch
+  clefairy: Dist=0.0420 → This is Clefairy (삐삐). It is a GEN I Pokemon. An i
+  cubone: Dist=0.0454 → This is Cubone (탕구리). It is a GEN I Pokemon. A Cub
+  cyndaquil: Dist=0.0246 → This is Cyndaquil (브케인). It is a GEN II Pokemon. "
+  ditto: Dist=0.0238 → A cheerful, amorphous purple blob with a simple, c
+  dragonair: Dist=0.0364 → This is Dragonair (신뇽). It is a GEN I Pokemon. A s
+  dragonite: Dist=0.0475 → This is Dragonite (망나뇽). It is a GEN I Pokemon. A 
+  eevee: Dist=0.0297 → This is Eevee (이브이). It is a GEN I Pokemon. An ill
+  electabuzz: Dist=0.1905 → This is Electabuzz (에레브). It is a GEN I Pokemon. A
+  espeon: Dist=0.0274 → A poised, lavender-colored creature with large ear
+  gengar: Dist=0.0261 → This is Gengar (팬텀). It is a GEN I Pokemon. A misc
+  geodude: Dist=0.0380 → This is Geodude (꼬마돌). It is a GEN I Pokemon. A Ge
+  growlithe: Dist=0.0374 → This is Growlithe (가디). It is a GEN I Pokemon. A c
+  gyarados: Dist=0.0329 → This is Gyarados (갸라도스). It is a GEN I Pokemon. A 
+  haunter: Dist=0.0380 → This is Haunter (고우스트). It is a GEN I Pokemon. A m
+  hitmonchan: Dist=0.0740 → This is Hitmonchan (홍수몬). It is a GEN I Pokemon. A
+  hitmonlee: Dist=0.0593 → This is Hitmonlee (시라소몬). It is a GEN I Pokemon. A
+  hitmontop: Dist=0.0365 → This is Hitmontop (카포에라). It is a GEN II Pokemon. 
+  jigglypuff: Dist=0.0234 → This is Jigglypuff (푸린). It is a GEN I Pokemon. A 
+  lapras: Dist=0.0224 → This is Lapras (라프라스). It is a GEN I Pokemon. A se
+  lugia: Dist=0.0391 → A legendary dragon-like Pokémon with a predominant
+  machamp: Dist=0.0256 → This is Machamp (괴력몬). It is a GEN I Pokemon. A po
+  magmar: Dist=0.0359 → This is Magmar (마그마). It is a GEN I Pokemon. An il
+  meowth: Dist=0.0377 → This is Meowth (나옹). It is a GEN I Pokemon. A chee
+  mew: Dist=0.0203 → A whimsical pink creature with large blue eyes and
+  mewtwo: Dist=0.0480 → This is Mewtwo (뮤츠). It is a GEN I Pokemon. "Mewtw
+  moltres: Dist=0.0492 → A majestic, fiery-winged bird with a streamlined b
+  ninetales: Dist=0.0340 → This is Ninetales (나인테일). It is a GEN I Pokemon. A
+  pikachu: Dist=0.0272 → This is Pikachu (피카츄). It is a GEN I Pokemon. Pika
+  pinsir: Dist=0.0495 → This is Pinsir (쁘사이저). It is a GEN I Pokemon. An i
+  poliwrath: Dist=0.0253 → This is Poliwrath (강챙이). It is a GEN I Pokemon. A 
+  psyduck: Dist=0.0235 → This is Psyduck (고라파덕). It is a GEN I Pokemon. A w
+  raichu: Dist=0.0245 → This is Raichu (라이츄). It is a GEN I Pokemon. Elect
+  scyther: Dist=0.0599 → This is Scyther (스라크). It is a GEN I Pokemon. A fi
+  slowbro: Dist=0.0295 → This is Slowpoke (야돈). It is a GEN I Pokemon. Two 
+  snorlax: Dist=0.0243 → This is Snorlax (잠만보). It is a GEN I Pokemon. A sm
+  squirtle: Dist=0.0266 → This is Squirtle (꼬부기). It is a GEN I Pokemon. A f
+  totodile: Dist=0.0356 → This is Totodile (리아코). It is a GEN II Pokemon. A 
+  umbreon: Dist=0.0372 → This is Umbreon (블래키). It is a GEN II Pokemon. A s
+  venusaur: Dist=0.0306 → This is Bulbasaur (이상해씨). It is a GEN I Pokemon. A
+  zapdos: Dist=0.0433 → An illustrated electric-type Pokémon with sharp ta

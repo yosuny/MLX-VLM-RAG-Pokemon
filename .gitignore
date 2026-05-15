@@ -27,3 +27,11 @@ adapters_v*/
 
 # Archive (old plans, not for GitHub)
 archive/
+
+# Claude Code internal state
+.harness-state/
+snapshots/
+CLAUDE.md
+
+# Regenerable vector DBs
+chroma_db_fair/
